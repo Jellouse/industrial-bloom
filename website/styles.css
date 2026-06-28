@@ -312,7 +312,7 @@ h1 {
   padding: 96px 52px 190px;
 }
 
-.bottom-signup > *:not(.invert-circle) {
+.bottom-signup > *:not(.invert-circle):not(footer) {
   position: relative;
   z-index: 2;
 }
