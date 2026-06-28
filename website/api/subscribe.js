@@ -26,10 +26,6 @@ module.exports = async function handler(request, response) {
     return response.status(500).json({ error: "Missing BREVO_LIST_ID" });
   }
 
-  const ip =
-    request.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
-    request.socket?.remoteAddress;
-
   const brevoResponse = await fetch(BREVO_URL, {
     method: "POST",
     headers: {
@@ -40,11 +36,6 @@ module.exports = async function handler(request, response) {
       email,
       listIds: [listId],
       updateEnabled: true,
-      attributes: {
-        SOURCE: "industrial-bloom-website",
-        REFERRER: request.headers.referer || "",
-        SIGNUP_IP: ip || "",
-      },
     }),
   });
 
