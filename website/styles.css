@@ -31,6 +31,24 @@ body {
   background: #fff;
 }
 
+.hero > *:not(.invert-circle):not(picture),
+.thorn-continuation {
+  transition: filter 600ms ease;
+}
+
+.hero.is-inverted {
+  background: #000;
+}
+
+.hero.is-inverted > *:not(.invert-circle):not(picture),
+body.is-inverted .thorn-continuation {
+  filter: invert(1);
+}
+
+body.is-inverted .thorn-continuation {
+  background: #000;
+}
+
 .logo {
   --rotation: 0deg;
 
@@ -219,6 +237,12 @@ h1 {
 .hero.is-submitted > .invert-circle,
 .bottom-signup.is-submitted > .invert-circle {
   animation: bloom-invert 9800ms cubic-bezier(0.12, 0.84, 0.18, 1) forwards;
+}
+
+.hero.is-inverted > .invert-circle,
+.bottom-signup.is-inverted > .invert-circle {
+  opacity: 0;
+  animation: none;
 }
 
 @keyframes bloom-invert {
