@@ -365,10 +365,10 @@ h1 {
   justify-content: space-between;
   gap: 16px;
   margin: 0 auto;
-  max-width: none;
+  max-width: 421.5px;
   font-family: "Unica77 LL", "Unica77_LL", "Helvetica Neue", Arial, sans-serif;
-  font-size: 26px;
-  line-height: 1.2;
+  font-size: 14.17px;
+  line-height: 17px;
   font-weight: 500;
   letter-spacing: 0.43px;
   white-space: nowrap;
@@ -407,11 +407,9 @@ h1 {
   }
 
   .bottom-signup footer {
-    right: 52px;
-    bottom: 62px;
-    left: 52px;
-    font-size: 25px;
-    line-height: 1.2;
+    right: 21px;
+    bottom: 31px;
+    left: 21px;
   }
 }
 
