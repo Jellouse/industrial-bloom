@@ -208,6 +208,7 @@ h1 {
   aspect-ratio: 1;
   border-radius: 50%;
   background: #fff;
+  filter: blur(48px);
   mix-blend-mode: difference;
   opacity: 0;
   pointer-events: none;
@@ -223,21 +224,25 @@ h1 {
 @keyframes bloom-invert {
   0% {
     opacity: 0;
+    filter: blur(48px);
     transform: translate(-50%, -50%) scale(0);
   }
 
   28% {
     opacity: 1;
+    filter: blur(0);
     transform: translate(-50%, -50%) scale(1.15);
   }
 
   55% {
     opacity: 1;
+    filter: blur(0);
     transform: translate(-50%, -50%) scale(1.15);
   }
 
   100% {
     opacity: 0;
+    filter: blur(0);
     transform: translate(-50%, -50%) scale(1.15);
   }
 }
