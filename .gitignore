@@ -1,0 +1,7 @@
+*
+!.gitignore
+!index.html
+!styles.css
+!assets/
+!assets/responsive/
+!assets/responsive/**

@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Insturstrial Bloom</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="hero">
+      <picture>
+        <source
+          type="image/webp"
+          srcset="assets/responsive/logo-96.webp 96w"
+          sizes="44px"
+        >
+        <img
+          class="logo"
+          src="assets/responsive/logo-96.png"
+          srcset="assets/responsive/logo-96.png 96w"
+          sizes="44px"
+          width="1217"
+          height="1209"
+          alt="Industrial Bloom"
+          decoding="async"
+        >
+      </picture>
+
+      <section class="intro" aria-labelledby="title">
+        <h1 id="title">Industrial Bloom</h1>
+        <p>Get updates and be the first<br>to know when we launch</p>
+      </section>
+
+      <form class="signup signup-header">
+        <label class="sr-only" for="email">Email</label>
+        <input id="email" name="email" type="email" placeholder="Email" required>
+        <button type="submit">Sign up</button>
+      </form>
+
+      <div class="thorn-frame" aria-hidden="true">
+        <picture>
+          <source
+            type="image/webp"
+            srcset="assets/responsive/render-12-900.webp 840w, assets/responsive/render-12-1600.webp 1494w, assets/responsive/render-12-2400.webp 2241w"
+            sizes="(min-width: 1024px) 1751px, 852px"
+          >
+          <img
+            class="thorn"
+            src="assets/responsive/render-12-1600.png"
+            srcset="assets/responsive/render-12-900.png 840w, assets/responsive/render-12-1600.png 1494w, assets/responsive/render-12-2400.png 2241w"
+            sizes="(min-width: 1024px) 1751px, 852px"
+            width="3236"
+            height="3465"
+            alt=""
+            fetchpriority="high"
+            decoding="async"
+          >
+        </picture>
+      </div>
+      <div class="invert-circle" aria-hidden="true"></div>
+      <a class="explore" href="#below">Explore more below</a>
+    </main>
+
+    <section id="below" class="thorn-continuation" aria-hidden="true">
+      <picture>
+        <source
+          type="image/webp"
+          srcset="assets/responsive/render-12-900.webp 840w, assets/responsive/render-12-1600.webp 1494w, assets/responsive/render-12-2400.webp 2241w"
+          sizes="(min-width: 1024px) 1751px, 852px"
+        >
+        <img
+          src="assets/responsive/render-12-1600.png"
+          srcset="assets/responsive/render-12-900.png 840w, assets/responsive/render-12-1600.png 1494w, assets/responsive/render-12-2400.png 2241w"
+          sizes="(min-width: 1024px) 1751px, 852px"
+          width="3236"
+          height="3465"
+          alt=""
+          loading="lazy"
+          decoding="async"
+        >
+      </picture>
+    </section>
+
+    <section class="visuals">
+      <figure class="visual-image is-loading">
+        <img
+          src="assets/responsive/render-6-640.png"
+          data-webp-srcset="assets/responsive/render-6-640.webp 398w, assets/responsive/render-6-1280.webp 796w, assets/responsive/render-6-1920.webp 1195w"
+          data-srcset="assets/responsive/render-6-640.png 398w, assets/responsive/render-6-1280.png 796w, assets/responsive/render-6-1920.png 1195w"
+          width="3088"
+          height="4962"
+          alt=""
+          loading="lazy"
+          decoding="async"
+        >
+      </figure>
+      <figure class="visual-image is-loading">
+        <img
+          src="assets/responsive/image-3-480.png"
+          data-webp-srcset="assets/responsive/image-3-480.webp 321w, assets/responsive/image-3-686.webp 459w"
+          data-srcset="assets/responsive/image-3-480.png 321w, assets/responsive/image-3-686.png 459w"
+          width="686"
+          height="1024"
+          alt=""
+          loading="lazy"
+          decoding="async"
+        >
+      </figure>
+      <figure class="visual-image is-loading">
+        <img
+          src="assets/responsive/render-9-640.png"
+          data-webp-srcset="assets/responsive/render-9-640.webp 479w, assets/responsive/render-9-1280.webp 958w, assets/responsive/render-9-1920.webp 1438w"
+          data-srcset="assets/responsive/render-9-640.png 479w, assets/responsive/render-9-1280.png 958w, assets/responsive/render-9-1920.png 1438w"
+          width="2500"
+          height="3338"
+          alt=""
+          loading="lazy"
+          decoding="async"
+        >
+      </figure>
+
+      <section class="bottom-signup" aria-labelledby="bottom-title">
+        <h2 id="bottom-title">You’ve scrolled all the way. Time to sign up.</h2>
+        <form class="signup signup-bottom">
+          <label class="sr-only" for="bottom-email">Email</label>
+          <input id="bottom-email" name="email" type="email" placeholder="Email" required>
+          <button type="submit">Sign up</button>
+        </form>
+        <div class="invert-circle" aria-hidden="true"></div>
+        <footer>
+          <span>Part of Humansize CORP.</span>
+          <span>672-395-863</span>
+        </footer>
+      </section>
+    </section>
+
+    <script>
+      const logo = document.querySelector(".logo");
+      const explore = document.querySelector(".explore");
+      const forms = document.querySelectorAll(".signup");
+      const bodyCopy = document.querySelector(".intro p");
+      const progressiveImages = document.querySelectorAll(".visual-image img");
+      const supportsWebp = document.createElement("canvas").toDataURL("image/webp").startsWith("data:image/webp");
+      let logoRotation = 0;
+      let lastScrollY = window.scrollY;
+      let snapTimer;
+
+      function setLogoRotation(rotation, snapping = false) {
+        logoRotation = rotation;
+        logo.classList.toggle("is-snapping", snapping);
+        logo.style.setProperty("--rotation", `${logoRotation}deg`);
+      }
+
+      function snapLogo() {
+        const snappedRotation = Math.round(logoRotation / 90) * 90;
+        setLogoRotation(snappedRotation, true);
+      }
+
+      logo.addEventListener("mouseenter", () => {
+        setLogoRotation(logoRotation + 90, true);
+      });
+
+      forms.forEach((form) => {
+        form.addEventListener("submit", (event) => {
+          event.preventDefault();
+          const section = form.closest(".hero, .bottom-signup");
+          section.classList.add("is-submitted");
+
+          if (section.classList.contains("hero")) {
+            setTimeout(() => {
+              bodyCopy.textContent = "We will be in touch.";
+            }, 320);
+          } else {
+            section.querySelector("h2").textContent = "We will be in touch.";
+          }
+        });
+      });
+
+      function fadeExplore() {
+        const opacity = Math.max(0, 1 - window.scrollY / 140);
+        explore.style.opacity = opacity;
+        explore.style.pointerEvents = opacity > 0.15 ? "auto" : "none";
+      }
+
+      fadeExplore();
+
+      progressiveImages.forEach((image) => {
+        const wrapper = image.closest(".visual-image");
+
+        image.addEventListener("load", () => {
+          wrapper.classList.remove("is-loading");
+        });
+
+        if (image.complete) {
+          wrapper.classList.remove("is-loading");
+        }
+      });
+
+      function upgradeImages() {
+        progressiveImages.forEach((image) => {
+          const srcset = supportsWebp ? image.dataset.webpSrcset : image.dataset.srcset;
+          const candidates = srcset.split(",").map((entry) => {
+            const [src, width] = entry.trim().split(/\s+/);
+            return { src, width: Number(width.replace("w", "")) };
+          });
+          const neededWidth = Math.ceil(image.getBoundingClientRect().width * window.devicePixelRatio);
+          const target = candidates.find((candidate) => candidate.width >= neededWidth) || candidates.at(-1);
+
+          if (image.dataset.loadedSrc === target.src) return;
+
+          image.closest(".visual-image").classList.add("is-loading");
+          image.dataset.loadedSrc = target.src;
+          image.src = target.src;
+        });
+      }
+
+      upgradeImages();
+      window.addEventListener("resize", upgradeImages);
+
+      window.addEventListener("scroll", () => {
+        const scrollDelta = window.scrollY - lastScrollY;
+        lastScrollY = window.scrollY;
+
+        fadeExplore();
+        setLogoRotation(logoRotation + scrollDelta * 0.18);
+
+        clearTimeout(snapTimer);
+        snapTimer = setTimeout(snapLogo, 260);
+      }, { passive: true });
+    </script>
+  </body>
+</html>
