@@ -264,6 +264,7 @@ h1 {
 }
 
 .visual-image {
+  position: relative;
   margin: 0;
   background: #fff;
 }
@@ -272,11 +273,31 @@ h1 {
   display: block;
   width: 100%;
   height: auto;
-  transition: opacity 220ms ease;
 }
 
-.visual-image.is-loading img {
-  opacity: 0.45;
+.visual-image::after {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 12px;
+  height: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-top-color: #000;
+  border-radius: 50%;
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+}
+
+.visual-image.is-loading::after {
+  opacity: 1;
+  animation: spin 800ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .bottom-signup {

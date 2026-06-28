@@ -217,6 +217,7 @@
 
       upgradeImages();
       window.addEventListener("resize", upgradeImages);
+      window.addEventListener("scroll", upgradeImages, { passive: true });
 
       window.addEventListener("scroll", () => {
         const scrollDelta = window.scrollY - lastScrollY;
