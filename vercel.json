@@ -1,6 +1,7 @@
 {
   "rewrites": [
     { "source": "/industrialbloom", "destination": "/" },
+    { "source": "/industrialbloom/", "destination": "/" },
     { "source": "/industrialbloom/:path*", "destination": "/:path*" }
   ]
 }
