@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "build": "rm -rf public && mkdir -p public && cp -R website/. public && rm -rf public/api public/.vercel public/vercel.json"
+  }
+}

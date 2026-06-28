@@ -1,5 +1,9 @@
 *
 !.gitignore
+!api/
+!api/**
+!package.json
+!vercel.json
 !website/
 !website/**
 website/.vercel/
