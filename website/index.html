@@ -9,23 +9,15 @@
   </head>
   <body>
     <main class="hero">
-      <picture>
-        <source
-          type="image/webp"
-          srcset="assets/responsive/logo-96.webp 96w"
-          sizes="44px"
-        >
-        <img
-          class="logo"
-          src="assets/responsive/logo-96.png"
-          srcset="assets/responsive/logo-96.png 96w"
-          sizes="44px"
-          width="1217"
-          height="1209"
-          alt="Industrial Bloom"
-          decoding="async"
-        >
-      </picture>
+      <button class="logo-lockup" type="button" aria-label="Production status">
+        <span class="logo-text" aria-hidden="true">Currently setting up production</span>
+        <span class="logo-mark" aria-hidden="true">
+          <span class="logo-piece logo-piece-top-left"></span>
+          <span class="logo-piece logo-piece-top-right"></span>
+          <span class="logo-piece logo-piece-bottom-left"></span>
+          <span class="logo-piece logo-piece-bottom-right"></span>
+        </span>
+      </button>
 
       <section class="intro" aria-labelledby="title">
         <h1 id="title">Industrial Bloom</h1>
@@ -148,7 +140,7 @@
     </section>
 
     <script>
-      const logo = document.querySelector(".logo");
+      const logo = document.querySelector(".logo-lockup");
       const explore = document.querySelector(".explore");
       const forms = document.querySelectorAll(".signup");
       const bodyCopy = document.querySelector(".intro p");
@@ -169,22 +161,43 @@
         setLogoRotation(snappedRotation, true);
       }
 
-      logo.addEventListener("mouseenter", () => {
-        setLogoRotation(logoRotation + 90, true);
-      });
+      function showSignupSuccess(form) {
+        const section = form.closest(".hero, .bottom-signup");
+        section.classList.add("is-submitted");
+
+        if (section.classList.contains("hero")) {
+          setTimeout(() => {
+            bodyCopy.textContent = "We will be in touch.";
+          }, 320);
+        } else {
+          section.querySelector("h2").textContent = "We will be in touch.";
+        }
+      }
 
       forms.forEach((form) => {
-        form.addEventListener("submit", (event) => {
+        form.addEventListener("submit", async (event) => {
           event.preventDefault();
-          const section = form.closest(".hero, .bottom-signup");
-          section.classList.add("is-submitted");
+          const button = form.querySelector("button");
+          const input = form.querySelector("input");
+          const originalText = button.textContent;
 
-          if (section.classList.contains("hero")) {
-            setTimeout(() => {
-              bodyCopy.textContent = "We will be in touch.";
-            }, 320);
-          } else {
-            section.querySelector("h2").textContent = "We will be in touch.";
+          button.disabled = true;
+          button.textContent = "Sending";
+
+          try {
+            const response = await fetch("api/subscribe", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email: input.value }),
+            });
+
+            if (!response.ok) throw new Error("Signup failed");
+
+            showSignupSuccess(form);
+          } catch {
+            button.disabled = false;
+            button.textContent = originalText;
+            input.focus();
           }
         });
       });
