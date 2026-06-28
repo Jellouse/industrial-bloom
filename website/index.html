@@ -9,15 +9,23 @@
   </head>
   <body>
     <main class="hero">
-      <button class="logo-lockup" type="button" aria-label="Production status">
-        <span class="logo-text" aria-hidden="true">Currently setting up production</span>
-        <span class="logo-mark" aria-hidden="true">
-          <span class="logo-piece logo-piece-top-left"></span>
-          <span class="logo-piece logo-piece-top-right"></span>
-          <span class="logo-piece logo-piece-bottom-left"></span>
-          <span class="logo-piece logo-piece-bottom-right"></span>
-        </span>
-      </button>
+      <picture>
+        <source
+          type="image/webp"
+          srcset="assets/responsive/logo-96.webp 96w"
+          sizes="44px"
+        >
+        <img
+          class="logo"
+          src="assets/responsive/logo-96.png"
+          srcset="assets/responsive/logo-96.png 96w"
+          sizes="44px"
+          width="1217"
+          height="1209"
+          alt="Industrial Bloom"
+          decoding="async"
+        >
+      </picture>
 
       <section class="intro" aria-labelledby="title">
         <h1 id="title">Industrial Bloom</h1>
@@ -140,7 +148,7 @@
     </section>
 
     <script>
-      const logo = document.querySelector(".logo-lockup");
+      const logo = document.querySelector(".logo");
       const explore = document.querySelector(".explore");
       const forms = document.querySelectorAll(".signup");
       const bodyCopy = document.querySelector(".intro p");
@@ -160,6 +168,10 @@
         const snappedRotation = Math.round(logoRotation / 90) * 90;
         setLogoRotation(snappedRotation, true);
       }
+
+      logo.addEventListener("mouseenter", () => {
+        setLogoRotation(logoRotation + 90, true);
+      });
 
       function showSignupSuccess(form) {
         const section = form.closest(".hero, .bottom-signup");
