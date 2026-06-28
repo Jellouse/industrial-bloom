@@ -318,11 +318,11 @@ h1 {
 }
 
 .bottom-signup h2 {
-  width: min(100%, 820px);
-  margin: 0 0 86px;
+  width: min(100%, 292px);
+  margin: 0 0 46px;
   font-family: "Unica77 LL", "Unica77_LL", "Helvetica Neue", Arial, sans-serif;
-  font-size: clamp(38px, 4.4vw, 68px);
-  line-height: 1.12;
+  font-size: 20.17px;
+  line-height: 23px;
   font-weight: 500;
   letter-spacing: 0.67px;
   text-align: center;
@@ -334,15 +334,15 @@ h1 {
   right: auto;
   bottom: auto;
   left: auto;
-  width: min(100%, 796px);
-  height: 92px;
-  padding: 18px 20px 18px 36px;
+  width: min(100%, 392px);
+  height: 46px;
+  padding: 9px 10px 9px 16px;
   transform: none;
 }
 
 .signup-bottom input {
-  font-size: 27px;
-  line-height: 1.2;
+  font-size: 15.17px;
+  line-height: 17px;
 }
 
 .bottom-signup.is-submitted .signup-bottom {
@@ -350,10 +350,10 @@ h1 {
 }
 
 .signup-bottom button {
-  width: 126px;
-  height: 54px;
-  font-size: 19px;
-  line-height: 1.2;
+  width: 63px;
+  height: 27px;
+  font-size: 11.17px;
+  line-height: 17px;
 }
 
 .bottom-signup footer {
@@ -385,25 +385,18 @@ h1 {
 
   .bottom-signup {
     justify-content: center;
-    padding: 80px 40px 190px;
+    padding: 80px 21px 190px;
   }
 
   .bottom-signup h2 {
-    width: min(100%, 420px);
-    margin-bottom: 88px;
-    font-size: 40px;
-    line-height: 1.12;
+    width: min(100%, 292px);
+    margin-bottom: 46px;
+    font-size: 20.17px;
+    line-height: 23px;
   }
 
   .signup-bottom {
     width: 100%;
-    height: 88px;
-    padding: 16px 18px 16px 35px;
-  }
-
-  .signup-bottom button {
-    width: 120px;
-    height: 52px;
   }
 
   .bottom-signup footer {
