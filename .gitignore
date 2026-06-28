@@ -1,5 +1,6 @@
 *
 !.gitignore
+!.vercelignore
 !index.html
 !styles.css
 !vercel.json
@@ -29,3 +30,4 @@
 !assets/responsive/render-9-1280.webp
 !assets/responsive/render-9-1920.png
 !assets/responsive/render-9-1920.webp
+.vercel
