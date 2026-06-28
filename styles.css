@@ -263,10 +263,20 @@ h1 {
   background: #fff;
 }
 
-.visuals > img {
+.visual-image {
+  margin: 0;
+  background: #fff;
+}
+
+.visual-image img {
   display: block;
   width: 100%;
   height: auto;
+  transition: opacity 220ms ease;
+}
+
+.visual-image.is-loading img {
+  opacity: 0.45;
 }
 
 .bottom-signup {
