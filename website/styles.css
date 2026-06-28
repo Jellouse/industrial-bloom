@@ -361,11 +361,12 @@ h1 {
   right: 52px;
   bottom: 31px;
   left: 52px;
+  width: min(100%, 392px);
   display: flex;
   justify-content: space-between;
   gap: 16px;
   margin: 0 auto;
-  max-width: 421.5px;
+  max-width: none;
   font-family: "Unica77 LL", "Unica77_LL", "Helvetica Neue", Arial, sans-serif;
   font-size: 14.17px;
   line-height: 17px;
@@ -403,6 +404,7 @@ h1 {
     right: 21px;
     bottom: 31px;
     left: 21px;
+    width: calc(100% - 42px);
   }
 }
 
