@@ -21,6 +21,8 @@
 }
 
 html {
+  --thorn-scale: 1;
+
   scroll-behavior: smooth;
 }
 
@@ -247,7 +249,7 @@ h1 {
   height: var(--thorn-height);
   object-fit: cover;
   pointer-events: none;
-  transform: translateX(-50%) scaleY(-1);
+  transform: translateX(-50%) scale(var(--thorn-scale)) scaleY(-1);
   transform-origin: center;
 }
 
@@ -353,7 +355,7 @@ h1 {
   height: var(--thorn-height);
   object-fit: cover;
   pointer-events: none;
-  transform: translateX(-50%) scaleY(-1);
+  transform: translateX(-50%) scale(var(--thorn-scale)) scaleY(-1);
 }
 
 .visuals {

@@ -165,6 +165,8 @@
       let lastScrollY = window.scrollY;
       let snapTimer;
       let snapFrame;
+      let thornScale = 1;
+      let thornTargetScale = 1;
 
       function renderLogoRotation() {
         logo.style.transform = `translateX(-50%) rotate(${logoRotation}deg)`;
@@ -255,7 +257,20 @@
         explore.style.pointerEvents = opacity > 0.15 ? "auto" : "none";
       }
 
+      function scaleThorn() {
+        const progress = Math.min(1, window.scrollY / window.innerHeight);
+        thornTargetScale = 1 - progress * 0.1;
+      }
+
+      function renderThornScale() {
+        thornScale += (thornTargetScale - thornScale) * 0.12;
+        document.documentElement.style.setProperty("--thorn-scale", thornScale);
+        requestAnimationFrame(renderThornScale);
+      }
+
       fadeExplore();
+      scaleThorn();
+      renderThornScale();
 
       progressiveImages.forEach((image) => {
         const wrapper = image.closest(".visual-image");
@@ -295,6 +310,7 @@
         lastScrollY = window.scrollY;
 
         fadeExplore();
+        scaleThorn();
         setLogoRotation(logoRotation + scrollDelta * 0.18);
 
         clearTimeout(snapTimer);
