@@ -71,7 +71,7 @@
           width="3236"
           height="3465"
           alt=""
-          loading="lazy"
+          loading="eager"
           decoding="async"
         >
       </picture>
@@ -86,7 +86,7 @@
           width="3088"
           height="4962"
           alt=""
-          loading="lazy"
+          loading="eager"
           decoding="async"
         >
       </figure>
@@ -103,7 +103,7 @@
           width="2334"
           height="3486"
           alt=""
-          loading="lazy"
+          loading="eager"
           decoding="async"
         >
       </figure>
@@ -116,7 +116,7 @@
           width="1517"
           height="1799"
           alt=""
-          loading="lazy"
+          loading="eager"
           decoding="async"
         >
       </figure>
@@ -133,7 +133,7 @@
           width="2500"
           height="3338"
           alt=""
-          loading="lazy"
+          loading="eager"
           decoding="async"
         >
       </figure>
@@ -293,7 +293,6 @@
 
       upgradeImages();
       window.addEventListener("resize", upgradeImages);
-      window.addEventListener("scroll", upgradeImages, { passive: true });
 
       window.addEventListener("scroll", () => {
         const scrollDelta = window.scrollY - lastScrollY;
