@@ -211,10 +211,6 @@
       function showSignupSuccess(form) {
         const section = form.closest(".hero, .bottom-signup");
         section.classList.add("is-submitted");
-        setTimeout(() => {
-          section.classList.add("is-inverted");
-          document.body.classList.add("is-inverted");
-        }, 1200);
 
         if (section.classList.contains("hero")) {
           setTimeout(() => {
