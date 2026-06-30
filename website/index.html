@@ -10,6 +10,23 @@
   </head>
   <body>
     <main class="hero">
+      <div class="thorn-frame" aria-hidden="true">
+        <video
+          class="thorn"
+          muted
+          autoplay
+          loop
+          playsinline
+          preload="metadata"
+          poster="assets/video/render-7-base-4-poster.jpg"
+          width="1600"
+          height="1712"
+        >
+          <source src="assets/video/render-7-base-4-pingpong-960.mp4" type="video/mp4" media="(max-width: 720px)">
+          <source src="assets/video/render-7-base-4-pingpong-1600.mp4" type="video/mp4">
+        </video>
+      </div>
+
       <img
         class="logo"
         src="assets/logo.png"
@@ -25,7 +42,7 @@
           <p class="tagline">A series of vases accentuating the contrast between nature and industry.</p>
         </section>
 
-        <form class="signup signup-header">
+        <form class="signup signup-header" novalidate>
           <label class="sr-only" for="email">Email</label>
           <input id="email" name="email" type="email" placeholder="Email" required>
           <button type="submit">Sign up</button>
@@ -33,49 +50,11 @@
         <p class="launch-note">Get updates and be the first to know when we launch</p>
       </div>
 
-      <div class="thorn-frame" aria-hidden="true">
-        <picture>
-          <source
-            type="image/webp"
-            srcset="assets/responsive/render-12-900.webp 840w, assets/responsive/render-12-1600.webp 1494w, assets/responsive/render-12-2400.webp 2241w, assets/responsive/render-12-full.webp 3236w"
-            sizes="(min-width: 1024px) 1751px, 852px"
-          >
-          <img
-            class="thorn"
-            src="assets/responsive/render-12-1600.png"
-            srcset="assets/responsive/render-12-900.png 840w, assets/responsive/render-12-1600.png 1494w, assets/responsive/render-12-2400.png 2241w"
-            sizes="(min-width: 1024px) 1751px, 852px"
-            width="3236"
-            height="3465"
-            alt=""
-            fetchpriority="high"
-            decoding="async"
-          >
-        </picture>
-      </div>
       <div class="invert-circle" aria-hidden="true"></div>
       <a class="explore" href="#below">Explore more below</a>
     </main>
 
-    <section id="below" class="thorn-continuation" aria-hidden="true">
-      <picture>
-        <source
-          type="image/webp"
-          srcset="assets/responsive/render-12-900.webp 840w, assets/responsive/render-12-1600.webp 1494w, assets/responsive/render-12-2400.webp 2241w, assets/responsive/render-12-full.webp 3236w"
-          sizes="(min-width: 1024px) 1751px, 852px"
-        >
-        <img
-          src="assets/responsive/render-12-1600.png"
-          srcset="assets/responsive/render-12-900.png 840w, assets/responsive/render-12-1600.png 1494w, assets/responsive/render-12-2400.png 2241w"
-          sizes="(min-width: 1024px) 1751px, 852px"
-          width="3236"
-          height="3465"
-          alt=""
-          loading="eager"
-          decoding="async"
-        >
-      </picture>
-    </section>
+    <section id="below" class="thorn-continuation" aria-hidden="true"></section>
 
     <section class="visuals">
       <figure class="visual-image is-loading">
@@ -86,7 +65,7 @@
           width="3088"
           height="4962"
           alt=""
-          loading="eager"
+          loading="lazy"
           decoding="async"
         >
       </figure>
@@ -103,7 +82,7 @@
           width="2334"
           height="3486"
           alt=""
-          loading="eager"
+          loading="lazy"
           decoding="async"
         >
       </figure>
@@ -116,7 +95,7 @@
           width="1517"
           height="1799"
           alt=""
-          loading="eager"
+          loading="lazy"
           decoding="async"
         >
       </figure>
@@ -133,14 +112,14 @@
           width="2500"
           height="3338"
           alt=""
-          loading="eager"
+          loading="lazy"
           decoding="async"
         >
       </figure>
 
       <section class="bottom-signup" aria-labelledby="bottom-title">
         <h2 id="bottom-title">You’ve scrolled all the way. Time to sign up.</h2>
-        <form class="signup signup-bottom">
+        <form class="signup signup-bottom" novalidate>
           <label class="sr-only" for="bottom-email">Email</label>
           <input id="bottom-email" name="email" type="email" placeholder="Email" required>
           <button type="submit">Sign up</button>
@@ -223,31 +202,64 @@
         }
       }
 
+      function typeNote(form, message) {
+        const section = form.closest(".hero, .bottom-signup");
+        const note = section.querySelector(".launch-note");
+        clearInterval(note.typeTimer);
+        note.textContent = "";
+
+        let index = 0;
+        note.typeTimer = setInterval(() => {
+          note.textContent = message.slice(0, index + 1);
+          index += 1;
+
+          if (index >= message.length) clearInterval(note.typeTimer);
+        }, 26);
+      }
+
+      async function handleSignup(form) {
+        const button = form.querySelector("button");
+        const input = form.querySelector("input");
+        const originalText = button.textContent;
+
+        if (button.disabled) return;
+
+        if (!input.validity.valid) {
+          typeNote(form, "Enter a valid email.");
+          input.focus();
+          return;
+        }
+
+        button.disabled = true;
+        button.textContent = "Sending";
+
+        try {
+          const response = await fetch("api/subscribe", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: input.value }),
+          });
+
+          if (!response.ok) throw new Error("Could not subscribe. Try again.");
+
+          showSignupSuccess(form);
+        } catch (error) {
+          button.disabled = false;
+          button.textContent = originalText;
+          typeNote(form, error.message);
+          input.focus();
+        }
+      }
+
       forms.forEach((form) => {
-        form.addEventListener("submit", async (event) => {
+        form.addEventListener("submit", (event) => {
           event.preventDefault();
-          const button = form.querySelector("button");
-          const input = form.querySelector("input");
-          const originalText = button.textContent;
+          handleSignup(form);
+        });
 
-          button.disabled = true;
-          button.textContent = "Sending";
-
-          try {
-            const response = await fetch("api/subscribe", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ email: input.value }),
-            });
-
-            if (!response.ok) throw new Error("Signup failed");
-
-            showSignupSuccess(form);
-          } catch {
-            button.disabled = false;
-            button.textContent = originalText;
-            input.focus();
-          }
+        form.querySelector("button").addEventListener("click", (event) => {
+          event.preventDefault();
+          handleSignup(form);
         });
       });
 
@@ -284,26 +296,42 @@
         }
       });
 
-      function upgradeImages() {
-        progressiveImages.forEach((image) => {
-          const srcset = supportsWebp ? image.dataset.webpSrcset : image.dataset.srcset;
-          const candidates = srcset.split(",").map((entry) => {
-            const [src, width] = entry.trim().split(/\s+/);
-            return { src, width: Number(width.replace("w", "")) };
-          });
-          const neededWidth = Math.ceil(image.getBoundingClientRect().width * window.devicePixelRatio);
-          const target = candidates.find((candidate) => candidate.width >= neededWidth) || candidates.at(-1);
-
-          if (image.dataset.loadedSrc === target.src) return;
-
-          image.closest(".visual-image").classList.add("is-loading");
-          image.dataset.loadedSrc = target.src;
-          image.src = target.src;
+      function upgradeImage(image) {
+        const srcset = supportsWebp ? image.dataset.webpSrcset : image.dataset.srcset;
+        const candidates = srcset.split(",").map((entry) => {
+          const [src, width] = entry.trim().split(/\s+/);
+          return { src, width: Number(width.replace("w", "")) };
         });
+        const neededWidth = Math.ceil(image.getBoundingClientRect().width * window.devicePixelRatio);
+        const target = candidates.find((candidate) => candidate.width >= neededWidth) || candidates.at(-1);
+
+        if (image.dataset.loadedSrc === target.src) return;
+
+        image.closest(".visual-image").classList.add("is-loading");
+        image.dataset.loadedSrc = target.src;
+        image.dataset.upgraded = "true";
+        image.src = target.src;
       }
 
-      upgradeImages();
-      window.addEventListener("resize", upgradeImages);
+      if ("IntersectionObserver" in window) {
+        const imageObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            upgradeImage(entry.target);
+            imageObserver.unobserve(entry.target);
+          });
+        }, { rootMargin: "800px 0px" });
+
+        progressiveImages.forEach((image) => imageObserver.observe(image));
+      } else {
+        progressiveImages.forEach(upgradeImage);
+      }
+
+      window.addEventListener("resize", () => {
+        progressiveImages.forEach((image) => {
+          if (image.dataset.upgraded === "true") upgradeImage(image);
+        });
+      });
 
       window.addEventListener("scroll", () => {
         const scrollDelta = window.scrollY - lastScrollY;
