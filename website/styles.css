@@ -365,12 +365,12 @@ h1 {
 }
 
 .body-copy p {
-  width: min(100%, 292px);
+  width: min(100%, 430px);
   font-family: "Unica77 LL", "Unica77_LL", "Helvetica Neue", Arial, sans-serif;
-  font-size: 17.17px;
-  line-height: 22px;
+  font-size: 15.17px;
+  line-height: 19px;
   font-weight: 400;
-  letter-spacing: 0.52px;
+  letter-spacing: 0.46px;
   text-align: center;
   text-wrap: balance;
 }
