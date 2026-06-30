@@ -138,6 +138,8 @@
       const explore = document.querySelector(".explore");
       const forms = document.querySelectorAll(".signup");
       const bodyCopy = document.querySelector(".tagline");
+      const thornFrame = document.querySelector(".thorn-frame");
+      const thornVideo = document.querySelector(".thorn");
       const progressiveImages = document.querySelectorAll(".visual-image img");
       const supportsWebp = document.createElement("canvas").toDataURL("image/webp").startsWith("data:image/webp");
       let logoRotation = 0;
@@ -187,6 +189,20 @@
 
       logo.addEventListener("mouseenter", () => {
         animateLogoTo(logoRotation + 90);
+      });
+
+      function allowManualVideoPlay() {
+        thornFrame.classList.add("needs-manual-play");
+      }
+
+      thornVideo.play().catch(allowManualVideoPlay);
+
+      setTimeout(() => {
+        if (thornVideo.paused) allowManualVideoPlay();
+      }, 600);
+
+      thornVideo.addEventListener("play", () => {
+        thornFrame.classList.remove("needs-manual-play");
       });
 
       function showSignupSuccess(form) {

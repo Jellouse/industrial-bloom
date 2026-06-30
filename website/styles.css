@@ -271,6 +271,10 @@ h1 {
   transform-origin: center;
 }
 
+.thorn-frame.needs-manual-play .thorn {
+  pointer-events: auto;
+}
+
 .explore {
   position: fixed;
   z-index: 99;
@@ -526,7 +530,16 @@ h1 {
 }
 
 @media (max-width: 463px) {
+  .hero,
+  .thorn-continuation {
+    --thorn-top: clamp(265px, 58svh, 430px);
+  }
+
   .signup input {
+    font-size: 16px;
+  }
+
+  .signup-bottom input {
     font-size: 16px;
   }
 
