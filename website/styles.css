@@ -63,6 +63,14 @@ body {
   filter: invert(1);
 }
 
+.bottom-signup.is-inverted {
+  background: #000;
+}
+
+.bottom-signup.is-inverted > *:not(.invert-circle) {
+  filter: invert(1);
+}
+
 .logo {
   --rotation: 0deg;
 
