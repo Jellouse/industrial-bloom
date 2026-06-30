@@ -12,9 +12,9 @@
     <main class="hero">
       <img
         class="logo"
-        src="assets/logo.svg"
-        width="697"
-        height="697"
+        src="assets/logo.png"
+        width="1394"
+        height="1394"
         alt="Industrial Bloom"
         decoding="async"
       >
@@ -151,20 +151,48 @@
       let logoRotation = 0;
       let lastScrollY = window.scrollY;
       let snapTimer;
+      let snapFrame;
 
-      function setLogoRotation(rotation, snapping = false) {
+      function renderLogoRotation() {
+        logo.style.transform = `translateX(-50%) rotate(${logoRotation}deg)`;
+      }
+
+      function setLogoRotation(rotation) {
+        cancelAnimationFrame(snapFrame);
         logoRotation = rotation;
-        logo.classList.toggle("is-snapping", snapping);
-        logo.style.setProperty("--rotation", `${logoRotation}deg`);
+        renderLogoRotation();
+      }
+
+      function animateLogoTo(targetRotation) {
+        cancelAnimationFrame(snapFrame);
+        const startRotation = logoRotation;
+        const startTime = performance.now();
+        const duration = 650;
+
+        function frame(now) {
+          const progress = Math.min(1, (now - startTime) / duration);
+          const eased = 1 - Math.pow(1 - progress, 3);
+
+          logoRotation = startRotation + (targetRotation - startRotation) * eased;
+          renderLogoRotation();
+
+          if (progress < 1) {
+            snapFrame = requestAnimationFrame(frame);
+          } else {
+            logoRotation = targetRotation;
+            renderLogoRotation();
+          }
+        }
+
+        snapFrame = requestAnimationFrame(frame);
       }
 
       function snapLogo() {
-        const snappedRotation = Math.round(logoRotation / 90) * 90;
-        setLogoRotation(snappedRotation, true);
+        animateLogoTo(Math.round(logoRotation / 90) * 90);
       }
 
       logo.addEventListener("mouseenter", () => {
-        setLogoRotation(logoRotation + 90, true);
+        animateLogoTo(logoRotation + 90);
       });
 
       function showSignupSuccess(form) {

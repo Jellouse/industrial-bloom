@@ -63,12 +63,6 @@ body.is-inverted .thorn-continuation {
   mix-blend-mode: difference;
   cursor: pointer;
   transform: translateX(-50%) rotate(var(--rotation));
-  transition: transform 120ms linear;
-}
-
-.logo.is-snapping {
-  transition-duration: 900ms;
-  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .hero-copy {
