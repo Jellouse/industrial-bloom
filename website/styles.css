@@ -39,9 +39,9 @@ body {
 .hero {
   --intro-top: clamp(182.32px, calc(209.3px - 1.874vw), 200.61px);
   --signup-top: clamp(281.11px, calc(308.1px - 1.874vw), 299.4px);
-  --thorn-top: clamp(198.51px, calc(467.52px - 18.681vw), 380.84px);
-  --thorn-width: clamp(852.03px, calc(424.58px + 92.124vw), 1751.16px);
-  --thorn-height: clamp(912.32px, calc(454.66px + 98.643vw), 1875.08px);
+  --thorn-top: clamp(330px, 50svh, 455px);
+  --thorn-width: clamp(760px, 78vw, 1420px);
+  --thorn-height: clamp(814px, 83.46vw, 1520px);
 
   position: relative;
   width: 100%;
@@ -138,8 +138,8 @@ h1 {
   height: 46px;
   padding: 9px 10px 9px 16px;
   border-radius: 2px;
-  background: #0e0e0e;
-  mix-blend-mode: difference;
+  background: #f1f1f1;
+  mix-blend-mode: normal;
   transition: opacity 520ms ease, transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -154,13 +154,13 @@ h1 {
 .launch-note {
   margin-top: 10px;
   min-height: 22px;
-  color: #fff;
+  color: #000;
   font-family: "Unica77 LL", "Unica77_LL", "Helvetica Neue", Arial, sans-serif;
   font-size: 12.17px;
   line-height: 22px;
   font-weight: 400;
   letter-spacing: 0.37px;
-  mix-blend-mode: difference;
+  mix-blend-mode: normal;
   text-align: center;
 }
 
@@ -187,13 +187,13 @@ h1 {
   border: 0;
   outline: 0;
   background: transparent;
-  color: #fff;
+  color: #000;
   font: 400 15.17px/17px "Anonymous Pro", monospace;
-  mix-blend-mode: difference;
+  mix-blend-mode: normal;
 }
 
 .signup input::placeholder {
-  color: #fff;
+  color: #000;
   opacity: 1;
 }
 
@@ -227,29 +227,6 @@ h1 {
   opacity: 0.7;
 }
 
-@supports (-webkit-touch-callout: none) {
-  @media (hover: none) {
-    .signup-header {
-      background: #f1f1f1;
-      mix-blend-mode: normal;
-    }
-
-    .signup-header input {
-      color: #000;
-      mix-blend-mode: normal;
-    }
-
-    .signup-header input::placeholder {
-      color: #000;
-    }
-
-    .hero .launch-note {
-      color: #000;
-      mix-blend-mode: normal;
-    }
-  }
-}
-
 .thorn-frame {
   position: absolute;
   top: 0;
@@ -267,7 +244,7 @@ h1 {
   height: var(--thorn-height);
   object-fit: cover;
   pointer-events: none;
-  transform: translateX(-50%) scale(var(--thorn-scale)) scaleY(-1);
+  transform: translateX(-50%) scale(var(--thorn-scale));
   transform-origin: center;
 }
 
@@ -281,8 +258,11 @@ h1 {
   bottom: clamp(32px, 4svh, 42px);
   left: 50%;
   color: #fff;
-  font-size: 15.17px;
-  line-height: 17px;
+  font-family: "Unica77 LL", "Unica77_LL", "Helvetica Neue", Arial, sans-serif;
+  font-size: 12.17px;
+  line-height: 22px;
+  font-weight: 400;
+  letter-spacing: 0.37px;
   text-align: center;
   text-decoration: none;
   white-space: nowrap;
@@ -359,11 +339,11 @@ h1 {
 
 .thorn-continuation {
   --signup-top: clamp(281.11px, calc(308.1px - 1.874vw), 299.4px);
-  --thorn-top: clamp(198.51px, calc(467.52px - 18.681vw), 380.84px);
-  --thorn-height: clamp(912.32px, calc(454.66px + 98.643vw), 1875.08px);
+  --thorn-top: clamp(330px, 50svh, 455px);
+  --thorn-height: clamp(814px, 83.46vw, 1520px);
 
   position: relative;
-  height: max(0px, calc(var(--thorn-top) + var(--thorn-height) - 100svh));
+  height: max(100px, calc(var(--thorn-top) + var(--thorn-height) - 100svh + 100px));
   pointer-events: none;
 }
 
@@ -532,7 +512,13 @@ h1 {
 @media (max-width: 463px) {
   .hero,
   .thorn-continuation {
-    --thorn-top: clamp(265px, 58svh, 430px);
+    --thorn-top: clamp(430px, 63svh, 545px);
+    --thorn-width: clamp(520px, 150vw, 700px);
+    --thorn-height: clamp(556px, 160.5vw, 749px);
+  }
+
+  .thorn-continuation {
+    height: max(60px, calc(var(--thorn-top) + var(--thorn-height) - 100svh + 60px));
   }
 
   .signup input {
