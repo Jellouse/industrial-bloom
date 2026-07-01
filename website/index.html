@@ -6,7 +6,7 @@
     <meta name="format-detection" content="telephone=no">
     <base href="./">
     <title>Industrial Bloom</title>
-    <link rel="stylesheet" href="styles.css?v=15">
+    <link rel="stylesheet" href="styles.css?v=17">
   </head>
   <body>
     <main class="hero">
@@ -71,7 +71,7 @@
       </figure>
 
       <section class="body-copy">
-        <p>Simple forms and textures make any plant silhouette even more striking.</p>
+        <p>Simple forms and textures that make any plant silhouette even more striking.</p>
       </section>
 
       <figure class="visual-image is-loading">
@@ -212,6 +212,10 @@
         setTimeout(() => {
           section.classList.add("is-inverted");
         }, 360);
+
+        setTimeout(() => {
+          section.classList.remove("is-inverted");
+        }, 9800);
 
         if (section.classList.contains("hero")) {
           setTimeout(() => {

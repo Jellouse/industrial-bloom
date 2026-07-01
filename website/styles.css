@@ -59,6 +59,10 @@ body {
   background: #000;
 }
 
+.hero.is-inverted .thorn-frame {
+  background: #000;
+}
+
 .hero.is-inverted > *:not(.invert-circle) {
   filter: invert(1);
 }
