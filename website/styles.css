@@ -517,16 +517,62 @@ h1 {
   text-decoration: none;
 }
 
-@media (max-width: 463px) {
+@media (max-width: 820px) {
   .hero,
   .thorn-continuation {
-    --thorn-top: clamp(500px, 72svh, 620px);
     --thorn-width: clamp(520px, 150vw, 700px);
     --thorn-height: clamp(556px, 160.5vw, 749px);
+    --thorn-fold-height: clamp(222.4px, 64.2vw, 299.6px);
+  }
+
+  .hero {
+    display: flex;
+    height: auto;
+    min-height: 100svh;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .hero-copy {
+    position: relative;
+    top: auto;
+    left: auto;
+    order: 1;
+    justify-content: center;
+    height: calc(100svh - var(--thorn-fold-height));
+    margin-top: 0;
+    padding-top: 100px;
+  }
+
+  .hero.is-submitted .hero-copy {
+    top: auto;
+  }
+
+  .thorn-frame {
+    position: relative;
+    order: 2;
+    width: 100%;
+    height: var(--thorn-height);
+    margin-top: 0;
+    overflow: hidden;
+  }
+
+  .thorn {
+    top: 0;
+    object-fit: contain;
+  }
+
+  .hero-copy .signup {
+    margin-top: clamp(44px, 8svh, 72px);
   }
 
   .thorn-continuation {
-    height: max(60px, calc(var(--thorn-top) + var(--thorn-height) - 100svh + 60px));
+    height: 0;
+  }
+
+  .explore {
+    bottom: 16px;
   }
 
   .signup input {
@@ -570,5 +616,23 @@ h1 {
   .hero,
   .thorn-continuation {
     --thorn-top: max(calc(min(var(--signup-top), 35svh) + 44px), 32svh);
+  }
+}
+
+@media (max-width: 820px) and (max-height: 720px) {
+  .thorn-frame {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 820px) and (max-height: 570px) {
+  .hero-copy .signup {
+    margin-top: clamp(16px, calc(45px + 100svh - 570px), 45px);
+  }
+}
+
+@media (max-width: 820px) and (max-height: 541px) {
+  .hero-copy {
+    height: calc(541px - var(--thorn-fold-height));
   }
 }
