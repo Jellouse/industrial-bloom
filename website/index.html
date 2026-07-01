@@ -6,7 +6,7 @@
     <meta name="format-detection" content="telephone=no">
     <base href="./">
     <title>Industrial Bloom</title>
-    <link rel="stylesheet" href="styles.css?v=17">
+    <link rel="stylesheet" href="styles.css?v=19">
   </head>
   <body>
     <main class="hero">
@@ -208,17 +208,15 @@
       function showSignupSuccess(form) {
         const section = form.closest(".hero, .bottom-signup");
         section.classList.add("is-submitted");
-
-        setTimeout(() => {
-          section.classList.add("is-inverted");
-        }, 360);
+        section.classList.add("is-inverted");
 
         setTimeout(() => {
           section.classList.remove("is-inverted");
-        }, 9800);
+        }, 3000);
 
         if (section.classList.contains("hero")) {
           setTimeout(() => {
+            section.querySelector("h1").textContent = "Thank you";
             bodyCopy.textContent = "We will be in touch.";
           }, 320);
         } else {

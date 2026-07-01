@@ -63,7 +63,11 @@ body {
   background: #000;
 }
 
-.hero.is-inverted > *:not(.invert-circle) {
+.hero.is-inverted > *:not(.invert-circle):not(.thorn-frame) {
+  filter: invert(1);
+}
+
+.hero.is-inverted .thorn {
   filter: invert(1);
 }
 
@@ -301,7 +305,7 @@ h1 {
 
 .hero.is-submitted > .invert-circle,
 .bottom-signup.is-submitted > .invert-circle {
-  animation: bloom-invert 9800ms cubic-bezier(0.12, 0.84, 0.18, 1) forwards;
+  animation: none;
 }
 
 .hero.is-inverted > .invert-circle,
