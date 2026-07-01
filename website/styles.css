@@ -520,7 +520,7 @@ h1 {
 @media (max-width: 463px) {
   .hero,
   .thorn-continuation {
-    --thorn-top: clamp(430px, 63svh, 545px);
+    --thorn-top: clamp(500px, 72svh, 620px);
     --thorn-width: clamp(520px, 150vw, 700px);
     --thorn-height: clamp(556px, 160.5vw, 749px);
   }
