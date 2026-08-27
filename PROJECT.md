@@ -1,6 +1,6 @@
 # Industrial Bloom project handbook
 
-Last reviewed: 2026-07-26
+Last reviewed: 2026-08-27
 
 This is the first file future agents and collaborators should read. It describes the brand, product system, website, commerce backend, operations, and deployment workflow. Keep it current whenever architecture or operating procedures change.
 
@@ -47,12 +47,12 @@ Stable code IDs and their product names:
 
 | Product | Code ID | Primary shop image | Notes |
 | --- | --- | --- | --- |
-| 660 | `thorn-vase` | `/assets/shop/660-vase-01.jpg` | Intended to be the most accessible product. |
-| 120 | `column-vase` | `/assets/shop/120-vase-01.jpg` | Additional gallery image exists. |
-| 490 | `round-vase` | `/assets/shop/490-vase-01.jpg` | Uses four 90-degree extrusions per vase. |
-| 28 | `28` | Not yet properly wired | Small single-flower tube; its live image path still needs a real image file. |
+| 660 | `thorn-vase` | `/assets/shop/660-vase-01.jpg` | Intended to be the most accessible product. Live shop currently omits serial 1; do not invent it back until the shelf is counted (7 vs 8). |
+| 120 | `column-vase` | `/assets/shop/120-vase-01.jpg` | Counted shelf: 2 pieces. `edition_size` is 2. |
+| 490 | `round-vase` | `/assets/shop/490-vase-01.jpg` | Counted shelf: 2 assembled vases. `edition_size` is 2 with serials 1 and 2. Uses four 90-degree extrusions per vase. |
+| 28 | `28` | `/assets/shop/technical/type-28.png` | Small single-flower tube. Cover is a technical-drawing stopgap until a real single-vase photo exists. |
 
-`lib/shop/catalog.js` is fallback/seed data, not the normal editing surface. Use the admin panel for ongoing catalog changes.
+`lib/shop/catalog.js` is fallback/seed data, not the normal editing surface. Use the admin panel for ongoing catalog changes. A re-seed must not recreate the old invented editions (Type 120 edition 10 / Type 490 edition 8). Counted-shelf values live in the catalog, in `db/migrations/003_counted_shelf_and_type28.sql`, and in `scripts/align-counted-shelf.js` (`npm run db:align-shelf`). Seed inserts new rows only (`ON CONFLICT DO NOTHING`) and then runs that alignment. Alignment never edits Type 660 serials. Admin saves use `GREATEST` for `edition_size`, so lowering an edition requires a migration or the alignment script, not the admin form.
 
 Source files, renders, manufacturing files, and working media live under `studio/products/<product>/`. Web-ready files live under `website/assets/`.
 
@@ -80,10 +80,14 @@ The repository root must be the Vercel deployment root. Deploying from `website/
 
 | Route | Purpose |
 | --- | --- |
-| `/` | Brand landing page and newsletter signup |
+| `/` | Brand landing page, newsletter signup, and shop entry |
 | `/shop/` | Product galleries and cart |
 | `/shop/success.html` | Checkout confirmation/status |
 | `/kit/` | Curated kit/affiliate page |
+| `/impressum/` | Public legal stub: operator identity |
+| `/widerruf/` | Public legal stub: withdrawal notice |
+| `/versand/` | Public legal stub: shipping countries and rate |
+| `/datenschutz/` | Public legal stub: what data the site actually uses |
 | `/shop/admin/` | Token-protected product and order management |
 | `/shop/admin/docs/` | Token-protected project handbook |
 
@@ -113,6 +117,8 @@ The cart is stored in `localStorage` as product quantities and paired with an op
 The cart pill morphs into the cart panel using CSS dimensions measured by `syncMorphOrigin()`. The control is fixed to a safe-area-aware bottom anchor, so expanded cart and information panels grow upward without relying on Safari's inconsistent `visualViewport` measurements. Its count badge shares measured SVG cutouts with both the outlined Claim button and filled selection pill, preserving a true transparent gap over changing imagery. Cart contents fade in only after the morph completes; closing fades contents out before reversing the morph. Preserve the existing easing `cubic-bezier(0.53, 0, 0.12, 0.99)` unless the design direction changes.
 
 The outlined `+` beside the claim pill opens the same morph surface as a product-information panel. Both panels are semantic modal dialogs with keyboard focus trapping, Escape handling, and focus restoration. `lib/shop/product-metadata.js` is the single code-owned source for verified height, profile dimensions, and technical drawing paths. Types 120, 660, and 28 use their STEP geometry; Type 490 combines all four 90-degree STL quarters into the Ø80 mm assembly. The drawings live in `website/assets/shop/technical/` and use pure white faces/backgrounds with black linework. Dimension geometry shares the vase perspective while labels remain viewer-facing.
+
+The public shop footer links Impressum, Widerruf, Versand, and Datenschutz. It does not link `/shop/admin/`. Admin remains reachable by URL for the operator.
 
 Gallery order is stored per product in `gallery_images`. The storefront uses the API-provided gallery and falls back only to the product cover image.
 
@@ -156,7 +162,7 @@ Versioned SQL in `db/migrations/` creates and upgrades these tables:
 
 Core product fields include `available_serials INTEGER[]`, `edition_size`, `gallery_images TEXT[]`, price in cents, cover image path, and active state. Checkout and order line items are stored as JSONB snapshots so completed orders retain their serial assignments and purchase-time product details.
 
-Run `npm run db:setup` during environment setup or before deploying a schema change. Request handlers never run DDL. Applied migrations are recorded in `shop_schema_migrations`.
+Run `npm run db:setup` during environment setup or before deploying a schema or counted-shelf data change. Request handlers never run DDL. Applied migrations are recorded in `shop_schema_migrations`. Data migration `003_counted_shelf_and_type28.sql` aligns live Type 120 / Type 490 editions and replaces the Type 28 workshop cover.
 
 Never commit database credentials. Use Vercel environment variables and least-privilege database access.
 
@@ -173,7 +179,11 @@ Before enabling real sales, verify:
 - Shipping countries, fixed shipping price, tax/VAT treatment, refund process, and legal pages are correct.
 - A complete real-mode checkout is tested with a low-risk product.
 
+Checkout shipping is a single source in `lib/shop/shipping.js`: €12 tracked, 3–7 business days, countries DE AT BE CZ DK ES FI FR IE IT LU NL PL PT SE. Do not add Japan, UK, or US there without an explicit decision. Public stub pages live at `/impressum/`, `/widerruf/`, `/versand/`, and `/datenschutz/`. They are short and factual (Humansize, Bischof-Vieter-Straße 2, 59379 Selm, VAT ID DE464031324, worksurface.co). They are not lawyer-reviewed policies.
+
 ## 11. Newsletter
+
+The shop is public at `/shop/` and is linked from the homepage. Newsletter signup remains; do not claim the shop is unlaunched.
 
 Both landing-page signup forms post to `/api/subscribe`. The Vercel function validates email and adds or updates contacts in the configured Brevo list. Before meaningful traffic, add server-side rate limiting and bot protection.
 
@@ -210,6 +220,8 @@ npm run db:setup
 npm test
 npm run build
 ```
+
+`npm run db:setup` runs versioned migrations and then seed. For an existing live database, that is also the path that lowers Type 120 / Type 490 `edition_size` to 2, puts serials 1 and 2 on Type 490, and replaces the Type 28 workshop cover with `/assets/shop/technical/type-28.png`. `npm run db:align-shelf` runs only that data alignment. Request handlers never run DDL.
 
 `npm run build` replaces `public/` with a copy of `website/`, then removes source-only deployment metadata. Never hand-edit `public/`.
 
@@ -255,9 +267,11 @@ Official references: [Vercel project configuration](https://vercel.com/docs/proj
 
 ## 17. Known gaps and next decisions
 
-- Product 28 needs a proper web image and storefront gallery mapping.
+- Product 28 still needs a real single-vase photograph. The shop cover is the Type 28 technical drawing as a stopgap.
+- Type 660 serial 1 is missing on the live shop; 7 vs 8 has not been counted. Leave that inventory alone until Johann counts the shelf.
+- Japan (and UK/US) shipping is later. Current checkout countries are EU only, listed in `lib/shop/shipping.js`.
+- Legal pages are short honest stubs. VAT/tax handling, a complete privacy policy, a complete Widerrufsbelehrung, terms, returns, and cookie requirements still need business/legal review before relying on them for real sales.
 - Production currently trails the actively developed staging shop; promote only after launch readiness review.
-- Legal pages, VAT/tax handling, shipping policy, privacy policy, terms, returns, and cookie requirements need final business/legal review before real sales.
 - Admin uses a shared token rather than named users.
 - Product copy and final retail pricing remain editable business decisions.
 - Add monitoring/alerting before meaningful order volume.

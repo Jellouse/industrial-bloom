@@ -3,6 +3,12 @@ const { getPool, setupDatabase } = require("../../lib/shop/database");
 const { checkoutMode, id, normalizeCart, siteOrigin } = require("../../lib/shop/helpers");
 const { availableSerialNumbers, restoreSerialNumbers } = require("../../lib/shop/inventory");
 const { normalizeVisitorId } = require("../../lib/shop/reservations");
+const {
+  shippingAmountCents,
+  shippingCountryCodes,
+  shippingMaxBusinessDays,
+  shippingMinBusinessDays,
+} = require("../../lib/shop/shipping");
 
 async function releaseCheckout(checkoutId) {
   const db = getPool();
@@ -184,17 +190,17 @@ module.exports = async function handler(request, response) {
       customer_email: customerEmail || undefined,
       billing_address_collection: "required",
       shipping_address_collection: {
-        allowed_countries: ["DE", "AT", "BE", "CZ", "DK", "ES", "FI", "FR", "IE", "IT", "LU", "NL", "PL", "PT", "SE"],
+        allowed_countries: shippingCountryCodes(),
       },
       shipping_options: [
         {
           shipping_rate_data: {
             type: "fixed_amount",
-            fixed_amount: { amount: 1200, currency: "eur" },
+            fixed_amount: { amount: shippingAmountCents, currency: "eur" },
             display_name: "Tracked shipping",
             delivery_estimate: {
-              minimum: { unit: "business_day", value: 3 },
-              maximum: { unit: "business_day", value: 7 },
+              minimum: { unit: "business_day", value: shippingMinBusinessDays },
+              maximum: { unit: "business_day", value: shippingMaxBusinessDays },
             },
           },
         },
