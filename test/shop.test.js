@@ -12,13 +12,13 @@ const {
 } = require("../lib/shop/reservations");
 
 test("mock catalog has unique, purchasable products", () => {
-  assert.equal(products.length, 3);
+  assert.equal(products.length, 4);
   assert.equal(new Set(products.map((product) => product.id)).size, products.length);
   assert.ok(products.every((product) => product.priceCents > 0 && product.inventory === product.serialNumbers.length));
 });
 
 test("catalog uses product numbers as names", () => {
-  assert.deepEqual(products.map((product) => product.name), ["660", "120", "490"]);
+  assert.deepEqual(products.map((product) => product.name), ["660", "120", "490", "28"]);
 });
 
 test("fallback catalog uses the launch prices", () => {
@@ -26,7 +26,25 @@ test("fallback catalog uses the launch prices", () => {
     660: 7000,
     120: 15000,
     490: 25000,
+    28: 5500,
   });
+});
+
+test("counted shelf editions match two assembled 120 and 490 pieces", () => {
+  const byId = Object.fromEntries(products.map((product) => [product.id, product]));
+  assert.deepEqual(byId["column-vase"].serialNumbers, [1, 2]);
+  assert.equal(byId["column-vase"].editionSize, 2);
+  assert.deepEqual(byId["round-vase"].serialNumbers, [1, 2]);
+  assert.equal(byId["round-vase"].editionSize, 2);
+  assert.deepEqual(byId["thorn-vase"].serialNumbers, [1, 2, 3, 4, 5, 6, 7, 8]);
+  assert.equal(byId["thorn-vase"].editionSize, 8);
+});
+
+test("Type 28 fallback cover is the technical drawing, not the workshop photo", () => {
+  const type28 = products.find((product) => product.id === "28");
+  assert.equal(type28.imageUrl, "/assets/shop/technical/type-28.png");
+  assert.deepEqual(type28.galleryImages, ["/assets/shop/technical/type-28.png"]);
+  assert.doesNotMatch(JSON.stringify(type28), /f00d8bc6-972c-4c88-9bbe-8652b66e5f13/);
 });
 
 test("technical product metadata has one backend-owned source", () => {

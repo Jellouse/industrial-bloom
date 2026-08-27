@@ -101,6 +101,25 @@ test("the shop opens with a short logo-led mask reveal", () => {
   assert.match(js, /\.finally\(finishPageLoader\)/);
 });
 
+test("the landing page treats the shop as open", () => {
+  assert.doesNotMatch(landingHtml, /when we launch|coming soon/i);
+  assert.match(landingHtml, /class="shop-link" href="shop\/">Shop<\/a>/);
+  assert.match(landingHtml, /class="launch-note"><a href="shop\/">The shop is open<\/a>/);
+  assert.match(landingHtml, /class="launch-note launch-note-bottom"><a href="shop\/">The shop is open<\/a>/);
+  assert.match(landingHtml, /href="impressum\/">Impressum/);
+  assert.match(landingHtml, /href="widerruf\/">Widerruf/);
+  assert.match(landingHtml, /href="versand\/">Versand/);
+  assert.match(landingHtml, /href="datenschutz\/">Datenschutz/);
+});
+
+test("the public shop footer hides admin and links legal stubs", () => {
+  assert.doesNotMatch(html, /Manage shop|href="admin\/"/);
+  assert.match(html, /href="\.\.\/impressum\/">Impressum/);
+  assert.match(html, /href="\.\.\/widerruf\/">Widerruf/);
+  assert.match(html, /href="\.\.\/versand\/">Versand/);
+  assert.match(html, /href="\.\.\/datenschutz\/">Datenschutz/);
+});
+
 test("the teaser shares the one-time logo loader", () => {
   assert.match(landingHtml, /industrial-bloom-loader-seen/);
   assert.match(landingHtml, /class="site-loader"[\s\S]*class="loader-mask"/);

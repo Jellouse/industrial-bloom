@@ -1,6 +1,7 @@
 const { Pool } = require("@neondatabase/serverless");
 const { products } = require("../lib/shop/catalog");
 const { serialRange } = require("../lib/shop/serials");
+const { alignCountedShelf } = require("./align-counted-shelf");
 
 const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
 if (!connectionString) throw new Error("DATABASE_URL is required.");
@@ -31,6 +32,7 @@ async function seed() {
         ],
       );
     }
+    await alignCountedShelf(pool);
   } finally {
     await pool.end();
   }
