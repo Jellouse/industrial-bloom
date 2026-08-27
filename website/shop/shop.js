@@ -74,6 +74,7 @@ let dialogReturnFocus;
 let galleryNudgeTimer;
 const nudgedProducts = new Set();
 const galleryNudges = new WeakMap();
+const galleryHeightSyncs = new WeakMap();
 let progressiveImages = [];
 let progressiveImageObserver;
 const progressiveGalleryLadders = [
@@ -121,6 +122,22 @@ function toShopSrcset(srcset) {
     const [src, width] = entry.trim().split(/\s+/);
     return `${shopAssetUrl(src)} ${width}`;
   }).join(", ");
+}
+
+function galleryImageHeight(image, displayWidth) {
+  const width = displayWidth || image.getBoundingClientRect().width;
+  const intrinsicWidth = image.naturalWidth || Number(image.getAttribute("width")) || 0;
+  const intrinsicHeight = image.naturalHeight || Number(image.getAttribute("height")) || 0;
+  if (width && intrinsicWidth && intrinsicHeight) {
+    return Math.round(width * intrinsicHeight / intrinsicWidth);
+  }
+  return image.offsetHeight || 0;
+}
+
+function syncAllGalleryHeights() {
+  document.querySelectorAll(".product-gallery").forEach((gallery) => {
+    galleryHeightSyncs.get(gallery)?.();
+  });
 }
 
 function applyGallerySource(image, source) {
@@ -385,6 +402,14 @@ function createGallery(product) {
   const images = product.galleryImages?.length
     ? product.galleryImages
     : [product.imageUrl].filter(Boolean);
+  let currentIndex = 0;
+
+  function syncGalleryHeight(index = currentIndex) {
+    const image = track.children[index]?.querySelector("img");
+    if (!image) return;
+    const height = galleryImageHeight(image, gallery.clientWidth);
+    if (height > 0) gallery.style.height = `${height}px`;
+  }
 
   images.forEach((source, index) => {
     const slide = element("figure", "gallery-slide is-loading");
@@ -396,14 +421,17 @@ function createGallery(product) {
     image.decoding = "async";
     image.addEventListener("load", () => {
       slide.classList.remove("is-loading");
+      if (index === currentIndex) syncGalleryHeight(index);
     });
     if (image.complete) slide.classList.remove("is-loading");
     slide.append(image);
     track.append(slide);
   });
 
+  gallery.append(track);
+  galleryHeightSyncs.set(gallery, syncGalleryHeight);
+
   if (images.length === 1) {
-    gallery.append(track);
     return gallery;
   }
 
@@ -412,7 +440,6 @@ function createGallery(product) {
   gallery.setAttribute("aria-roledescription", "carousel");
   gallery.setAttribute("aria-label", `${product.name} image gallery`);
 
-  let currentIndex = 0;
   let swipe;
 
   function updateGallery(index) {
@@ -427,6 +454,7 @@ function createGallery(product) {
     track.style.transition = "transform 260ms cubic-bezier(0.22, 1, 0.36, 1)";
     track.style.transform = `translate3d(${-nextIndex * 100}%, 0, 0)`;
     updateGallery(nextIndex);
+    syncGalleryHeight(nextIndex);
   }
 
   galleryNudges.set(gallery, () => {
@@ -499,7 +527,6 @@ function createGallery(product) {
   });
 
   updateGallery(0);
-  gallery.append(track);
   return gallery;
 }
 
@@ -516,6 +543,7 @@ function renderProducts() {
   setActiveProduct(products[0]);
   observeProducts();
   observeProgressiveImages();
+  requestAnimationFrame(syncAllGalleryHeights);
 }
 
 function renderDock() {
@@ -1086,6 +1114,7 @@ window.addEventListener("resize", () => {
   progressiveImages.forEach((image) => {
     if (image.dataset.upgraded === "true") upgradeImage(image);
   });
+  syncAllGalleryHeights();
 });
 
 cartToggle.addEventListener("click", openCart);

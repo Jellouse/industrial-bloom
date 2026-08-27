@@ -332,6 +332,10 @@ test("shop galleries keep intrinsic photo ratios and reuse launch progressive up
   assert.match(js, /"\/assets\/shop\/490-vase-02\.jpg": \[1080, 1920\]/);
   assert.doesNotMatch(js, /test: \/\\\/assets\\\/shop/);
   assert.match(js, /containsCenter \? viewportHeight : 0\) \+ visible/);
+  assert.match(js, /function syncGalleryHeight/);
+  assert.match(js, /gallery\.style\.height = `\$\{height\}px`/);
+  assert.match(js, /width \* intrinsicHeight \/ intrinsicWidth/);
+  assert.match(js, /syncGalleryHeight\(nextIndex\)/);
 });
 
 test("the intro reuses the landing-page explore callout", () => {
