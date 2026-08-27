@@ -9,11 +9,25 @@ const admin = fs.readFileSync(path.join(root, "website/shop/admin/index.html"), 
 const docsPage = fs.readFileSync(path.join(root, "website/shop/admin/docs/index.html"), "utf8");
 const docsClient = fs.readFileSync(path.join(root, "website/shop/admin/docs/docs.js"), "utf8");
 const docsApi = fs.readFileSync(path.join(root, "api/shop/admin/docs.js"), "utf8");
+const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
 
 test("the project handbook covers the operational system", () => {
   for (const heading of ["Products", "Storefront logic", "Serial inventory", "Database", "Deployment", "Known gaps"]) {
     assert.match(handbook, new RegExp(`## .*${heading}`, "i"));
   }
+});
+
+test("admin and handbook assets use root-absolute URLs", () => {
+  assert.match(admin, /href="\/shop\/admin\/admin\.css\?v=\d+"/);
+  assert.match(admin, /src="\/shop\/admin\/admin\.js\?v=\d+"/);
+  assert.match(docsPage, /href="\/shop\/admin\/docs\/docs\.css\?v=\d+"/);
+  assert.match(docsPage, /src="\/shop\/admin\/docs\/docs\.js\?v=\d+"/);
+  assert.doesNotMatch(admin, /href="admin\.css|src="admin\.js/);
+  assert.doesNotMatch(docsPage, /href="docs\.css|src="docs\.js/);
+  assert.deepEqual(
+    vercel.redirects,
+    [{ source: "/shop/admin", destination: "/shop/admin/" }]
+  );
 });
 
 test("admin links to a separate protected handbook page", () => {

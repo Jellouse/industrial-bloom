@@ -4,6 +4,9 @@
   "functions": {
     "api/shop/admin/docs.js": { "includeFiles": "PROJECT.md" }
   },
+  "redirects": [
+    { "source": "/shop/admin", "destination": "/shop/admin/" }
+  ],
   "rewrites": [
     { "source": "/industrialbloom", "destination": "/" },
     { "source": "/industrialbloom/", "destination": "/" },
