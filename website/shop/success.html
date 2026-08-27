@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Order received — Industrial Bloom</title>
+    <link rel="stylesheet" href="shop.css?v=1">
+    <style>
+      .success { display:grid; min-height:100svh; place-content:center; justify-items:center; padding:40px; text-align:center; }
+      .success h1 { font-size:clamp(44px, 9vw, 100px); }
+      .success p { max-width:420px; margin:24px 0; line-height:1.5; }
+      .success a { color:inherit; font-size:13px; }
+    </style>
+  </head>
+  <body>
+    <main class="success">
+      <p class="eyebrow">Industrial Bloom</p>
+      <h1>Thank you</h1>
+      <p class="success-message">Confirming your order…</p>
+      <a href="./">Return to the collection</a>
+    </main>
+    <script>
+      localStorage.removeItem("industrial-bloom-cart");
+      const params = new URLSearchParams(location.search);
+      const query = params.has("session_id")
+        ? `session_id=${encodeURIComponent(params.get("session_id"))}`
+        : `order_id=${encodeURIComponent(params.get("order_id") || "")}`;
+      async function confirmOrder(attempt = 0) {
+        try {
+          const response = await fetch(`/api/shop/order-status?${query}`);
+          const result = await response.json();
+          if (result.status === "confirmed") {
+            document.querySelector(".success-message").textContent = "Your order is confirmed. We will be in touch when it is ready to ship.";
+          } else if (attempt < 8) {
+            setTimeout(() => confirmOrder(attempt + 1), 1000);
+          } else {
+            document.querySelector(".success-message").textContent = "Your payment is being confirmed. You may safely close this page.";
+          }
+        } catch (error) {
+          document.querySelector(".success-message").textContent = "Your order was received.";
+        }
+      }
+      confirmOrder();
+    </script>
+  </body>
+</html>

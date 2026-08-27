@@ -1,5 +1,14 @@
 {
   "scripts": {
-    "build": "rm -rf public && mkdir -p public && cp -R website/. public && rm -rf public/api public/.vercel public/vercel.json"
+    "build": "rm -rf public && mkdir -p public && cp -R website/. public && rm -rf public/api public/.vercel public/vercel.json",
+    "db:migrate": "node scripts/migrate-shop.js",
+    "db:seed": "node scripts/seed-shop.js",
+    "db:setup": "npm run db:migrate && npm run db:seed",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
+    "markdown-it": "^14.1.0",
+    "stripe": "^22.3.2"
   }
 }

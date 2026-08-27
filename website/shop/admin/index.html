@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shop management — Industrial Bloom</title>
+    <link rel="stylesheet" href="admin.css?v=6">
+  </head>
+  <body>
+    <header>
+      <a href="../">← Shop</a>
+      <span>Industrial Bloom / Management</span>
+      <button class="logout" type="button" hidden>Log out</button>
+    </header>
+
+    <main>
+      <section class="login-panel">
+        <form class="login-form">
+          <h1>Shop management</h1>
+          <p>Enter the staging admin token.</p>
+          <input name="token" type="password" autocomplete="current-password" required>
+          <button type="submit">Log in</button>
+          <p class="login-error" role="alert"></p>
+        </form>
+      </section>
+
+      <div class="dashboard" hidden>
+        <nav class="tabs" aria-label="Management sections">
+          <button class="is-active" type="button" data-tab="products">Products</button>
+          <button type="button" data-tab="orders">Orders</button>
+          <a href="docs/">Project docs</a>
+        </nav>
+
+        <section class="panel products-panel">
+          <div class="panel-heading">
+            <div><p class="eyebrow">Catalog</p><h1>Products</h1></div>
+            <button class="new-product" type="button">New product</button>
+          </div>
+          <div class="product-list"></div>
+        </section>
+
+        <section class="panel orders-panel" hidden>
+          <div class="panel-heading">
+            <div><p class="eyebrow">Operations</p><h1>Orders</h1></div>
+            <button class="refresh-orders" type="button">Refresh</button>
+          </div>
+          <div class="order-list"></div>
+        </section>
+      </div>
+    </main>
+
+    <dialog class="product-dialog">
+      <form class="product-form">
+        <div class="dialog-heading">
+          <h2>Product</h2>
+          <button class="close-dialog" type="button">Close</button>
+        </div>
+        <label>Name<input name="name" required></label>
+        <label>Slug<input name="slug" required pattern="[a-z0-9-]+"></label>
+        <label>Description<textarea name="description" rows="3"></textarea></label>
+        <div class="field-row">
+          <label>Price (€)<input name="price" type="number" min="0" step="0.01" required></label>
+          <label>Available serial numbers<input name="serialNumbers" placeholder="1-8 or 1, 2, 5"></label>
+        </div>
+        <div class="image-field">
+          <label>Image path<input name="imageUrl" placeholder="/assets/responsive/…" required></label>
+          <img class="product-image-preview" alt="">
+          <button class="manage-images" type="button">Add photos</button>
+        </div>
+        <div class="gallery-editor">
+          <p>Gallery order <span>The first photo is the cover.</span></p>
+          <div class="gallery-image-list"></div>
+        </div>
+        <label class="checkbox"><input name="active" type="checkbox" checked> Available in shop</label>
+        <p class="form-error" role="alert"></p>
+        <button class="save-product" type="submit">Save product</button>
+      </form>
+    </dialog>
+    <dialog class="image-dialog">
+      <div class="image-manager">
+        <div class="dialog-heading">
+          <div><p class="eyebrow">Product media</p><h2>Add photo</h2></div>
+          <button class="close-images" type="button">Close</button>
+        </div>
+        <form class="image-upload-form">
+          <input name="image" type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif" required>
+          <button type="submit">Upload</button>
+        </form>
+        <p class="image-note">JPEG, PNG, WebP, AVIF, or GIF · 2 MB maximum</p>
+        <p class="image-error" role="alert"></p>
+        <div class="image-list"></div>
+      </div>
+    </dialog>
+    <script src="admin.js?v=5"></script>
+  </body>
+</html>

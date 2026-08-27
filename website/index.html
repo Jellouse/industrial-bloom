@@ -6,9 +6,24 @@
     <meta name="format-detection" content="telephone=no">
     <base href="./">
     <title>Industrial Bloom</title>
-    <link rel="stylesheet" href="styles.css?v=19">
+    <script>
+      try {
+        const loaderKey = "industrial-bloom-loader-seen";
+        if (!sessionStorage.getItem(loaderKey)) {
+          sessionStorage.setItem(loaderKey, "1");
+          document.documentElement.classList.add("is-loading");
+        }
+      } catch {
+        document.documentElement.classList.add("is-loading");
+      }
+    </script>
+    <link rel="stylesheet" href="styles.css?v=22">
   </head>
   <body>
+    <div class="site-loader" aria-hidden="true">
+      <div class="loader-mask"></div>
+    </div>
+
     <main class="hero">
       <div class="thorn-frame" aria-hidden="true">
         <video
@@ -27,14 +42,16 @@
         </video>
       </div>
 
-      <img
-        class="logo"
-        src="assets/logo.png"
-        width="1394"
-        height="1394"
-        alt="Industrial Bloom"
-        decoding="async"
-      >
+      <div class="logo-anchor">
+        <img
+          class="logo"
+          src="assets/logo.png"
+          width="1394"
+          height="1394"
+          alt="Industrial Bloom"
+          decoding="async"
+        >
+      </div>
 
       <div class="hero-copy">
         <section class="intro" aria-labelledby="title">
@@ -51,6 +68,7 @@
       </div>
 
       <div class="invert-circle" aria-hidden="true"></div>
+      <a class="shop-link" href="shop/">Shop</a>
       <a class="explore" href="#below">Explore more below</a>
     </main>
 
@@ -142,16 +160,88 @@
       const thornVideo = document.querySelector(".thorn");
       const progressiveImages = document.querySelectorAll(".visual-image img");
       const supportsWebp = document.createElement("canvas").toDataURL("image/webp").startsWith("data:image/webp");
-      let logoRotation = 0;
+      const pageLoadStartedAt = Date.now();
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const loaderSpinDuration = 4800;
+      const shouldRunPageLoader = document.documentElement.classList.contains("is-loading");
+      let logoRotation = shouldRunPageLoader ? 0 : 90;
       let lastScrollY = window.scrollY;
       let snapTimer;
       let snapFrame;
+      let loaderSpinAnimation;
+      let loaderSettleAnimation;
+      let loaderQueued = false;
       let thornScale = 1;
       let thornTargetScale = 1;
+      let thornScaleFrame;
 
       function renderLogoRotation() {
-        logo.style.transform = `translateX(-50%) rotate(${logoRotation}deg)`;
+        logo.style.transform = `rotate(${logoRotation}deg)`;
       }
+
+      function startPageLoaderLogo() {
+        if (!shouldRunPageLoader || prefersReducedMotion || !logo.animate) {
+          logoRotation = 90;
+          renderLogoRotation();
+          return;
+        }
+
+        loaderSpinAnimation = logo.animate(
+          [{ transform: "rotate(0deg)" }, { transform: "rotate(360deg)" }],
+          { duration: loaderSpinDuration, iterations: Infinity },
+        );
+      }
+
+      function settlePageLoaderLogo(duration) {
+        if (!loaderSpinAnimation) return;
+
+        const elapsed = Number(loaderSpinAnimation.currentTime) || 0;
+        const currentAngle = (elapsed % loaderSpinDuration) / loaderSpinDuration * 360;
+        const targetAngle = currentAngle <= 90 ? 90 : 450;
+
+        loaderSpinAnimation.cancel();
+        loaderSettleAnimation = logo.animate(
+          [
+            { transform: `rotate(${currentAngle}deg)` },
+            { transform: `rotate(${targetAngle}deg)` },
+          ],
+          {
+            duration,
+            easing: "cubic-bezier(0.22, 0.61, 0.36, 1)",
+            fill: "forwards",
+          },
+        );
+      }
+
+      function finishPageLoader() {
+        if (!shouldRunPageLoader || loaderQueued) return;
+        loaderQueued = true;
+
+        const minimumTime = prefersReducedMotion ? 0 : 650;
+        const revealDuration = prefersReducedMotion ? 0 : 900;
+        const fontsReady = document.fonts?.ready || Promise.resolve();
+        const windowReady = document.readyState === "complete"
+          ? Promise.resolve()
+          : new Promise((resolve) => window.addEventListener("load", resolve, { once: true }));
+
+        Promise.all([fontsReady, windowReady]).then(() => {
+          const delay = Math.max(0, minimumTime - (Date.now() - pageLoadStartedAt));
+          setTimeout(() => {
+            settlePageLoaderLogo(revealDuration);
+            document.documentElement.classList.add("is-revealing");
+            setTimeout(() => {
+              loaderSettleAnimation?.cancel();
+              logoRotation = 90;
+              renderLogoRotation();
+              document.documentElement.classList.remove("is-loading", "is-revealing");
+            }, revealDuration);
+          }, delay);
+        });
+      }
+
+      startPageLoaderLogo();
+      if (shouldRunPageLoader) setTimeout(finishPageLoader, 4000);
+      finishPageLoader();
 
       function setLogoRotation(rotation) {
         cancelAnimationFrame(snapFrame);
@@ -195,7 +285,11 @@
         thornFrame.classList.add("needs-manual-play");
       }
 
-      thornVideo.play().catch(allowManualVideoPlay);
+      function playThornVideo() {
+        thornVideo.play().catch(allowManualVideoPlay);
+      }
+
+      playThornVideo();
 
       setTimeout(() => {
         if (thornVideo.paused) allowManualVideoPlay();
@@ -204,6 +298,18 @@
       thornVideo.addEventListener("play", () => {
         thornFrame.classList.remove("needs-manual-play");
       });
+
+      if ("IntersectionObserver" in window) {
+        const videoObserver = new IntersectionObserver(([entry]) => {
+          if (entry.isIntersecting) {
+            playThornVideo();
+          } else {
+            thornVideo.pause();
+          }
+        });
+
+        videoObserver.observe(thornVideo);
+      }
 
       function showSignupSuccess(form) {
         const section = form.closest(".hero, .bottom-signup");
@@ -294,17 +400,28 @@
       function scaleThorn() {
         const progress = Math.min(1, window.scrollY / window.innerHeight);
         thornTargetScale = 1 - progress * 0.1;
+
+        if (!thornScaleFrame) {
+          thornScaleFrame = requestAnimationFrame(renderThornScale);
+        }
       }
 
       function renderThornScale() {
         thornScale += (thornTargetScale - thornScale) * 0.12;
         document.documentElement.style.setProperty("--thorn-scale", thornScale);
-        requestAnimationFrame(renderThornScale);
+
+        if (Math.abs(thornTargetScale - thornScale) < 0.0001) {
+          thornScale = thornTargetScale;
+          document.documentElement.style.setProperty("--thorn-scale", thornScale);
+          thornScaleFrame = undefined;
+          return;
+        }
+
+        thornScaleFrame = requestAnimationFrame(renderThornScale);
       }
 
       fadeExplore();
       scaleThorn();
-      renderThornScale();
 
       progressiveImages.forEach((image) => {
         const wrapper = image.closest(".visual-image");
