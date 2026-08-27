@@ -196,8 +196,6 @@ h1 { margin: 0; font-size: clamp(44px, 8vw, 104px); font-weight: 400; letter-spa
 .product-card {
   display: block;
   width: 100%;
-  height: 100vh;
-  height: 100svh;
   margin: 0;
   overflow: clip;
   background: #e7e7e3;
@@ -205,7 +203,7 @@ h1 { margin: 0; font-size: clamp(44px, 8vw, 104px); font-weight: 400; letter-spa
 
 .product-gallery,
 .gallery-track,
-.gallery-slide { width: 100%; height: 100%; }
+.gallery-slide { width: 100%; }
 
 .product-gallery {
   position: relative;
@@ -220,11 +218,47 @@ h1 { margin: 0; font-size: clamp(44px, 8vw, 104px); font-weight: 400; letter-spa
 
 .gallery-track {
   display: flex;
+  align-items: flex-start;
   will-change: transform;
 }
 
-.gallery-slide { flex: 0 0 100%; margin: 0; }
-.gallery-slide img { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; user-select: none; -webkit-user-drag: none; }
+.gallery-slide {
+  position: relative;
+  flex: 0 0 100%;
+  margin: 0;
+}
+
+.gallery-slide img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.gallery-slide::after {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 12px;
+  height: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-top-color: #000;
+  border-radius: 50%;
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gallery-slide.is-loading::after {
+  opacity: 1;
+  animation: spin 800ms linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 
 .dock-scrim {
   position: fixed;

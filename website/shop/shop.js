@@ -38,6 +38,7 @@ const shopLogo = document.querySelector(".shop-logo");
 const shopIntro = document.querySelector(".shop-intro");
 const pageLoadStartedAt = Date.now();
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const supportsWebp = document.createElement("canvas").toDataURL("image/webp").startsWith("data:image/webp");
 const loaderSpinDuration = 4800;
 const introHandoffDistance = 120;
 const shouldRunPageLoader = document.documentElement.classList.contains("is-loading");
@@ -73,6 +74,111 @@ let dialogReturnFocus;
 let galleryNudgeTimer;
 const nudgedProducts = new Set();
 const galleryNudges = new WeakMap();
+let progressiveImages = [];
+let progressiveImageObserver;
+const progressiveGalleryLadders = [
+  {
+    test: /\/assets\/responsive\/render-6(?:-|\.|$)/,
+    src: "/assets/responsive/render-6-640.png",
+    width: 3088,
+    height: 4962,
+    webpSrcset: "/assets/responsive/render-6-640.webp 398w, /assets/responsive/render-6-1280.webp 796w, /assets/responsive/render-6-1920.webp 1195w, /assets/responsive/render-6-full.webp 3088w",
+    srcset: "/assets/responsive/render-6-640.png 398w, /assets/responsive/render-6-1280.png 796w, /assets/responsive/render-6-1920.png 1195w",
+  },
+  {
+    test: /\/assets\/responsive\/render-3(?:-|\.|$)/,
+    src: "/assets/responsive/render-3-900.png",
+    width: 2334,
+    height: 3486,
+    webpSrcset: "/assets/responsive/render-3-900.webp 603w, /assets/responsive/render-3-1600.webp 1071w, /assets/responsive/render-3-full.webp 2334w",
+    srcset: "/assets/responsive/render-3-900.png 603w, /assets/responsive/render-3-1600.png 1071w",
+  },
+  {
+    test: /\/assets\/responsive\/round-vase(?:-|\.|$)/,
+    src: "/assets/responsive/round-vase-900.png",
+    width: 1517,
+    height: 1799,
+    webpSrcset: "/assets/responsive/round-vase-900.webp 759w, /assets/responsive/round-vase-1600.webp 1349w, /assets/responsive/round-vase-full.webp 1517w",
+    srcset: "/assets/responsive/round-vase-900.png 759w, /assets/responsive/round-vase-1600.png 1349w",
+  },
+];
+const galleryImageSizes = {
+  "/assets/shop/660-vase-01.jpg": [1074, 1920],
+  "/assets/shop/120-vase-01.jpg": [1607, 2400],
+  "/assets/shop/120-vase-02.jpg": [2242, 2400],
+  "/assets/shop/490-vase-01.jpg": [1080, 1920],
+  "/assets/shop/490-vase-02.jpg": [1080, 1920],
+};
+
+function shopAssetUrl(source) {
+  const url = String(source || "");
+  if (!url) return "";
+  return url.startsWith("/") ? `..${url}` : url;
+}
+
+function toShopSrcset(srcset) {
+  return srcset.split(",").map((entry) => {
+    const [src, width] = entry.trim().split(/\s+/);
+    return `${shopAssetUrl(src)} ${width}`;
+  }).join(", ");
+}
+
+function applyGallerySource(image, source) {
+  const path = String(source || "").split("?")[0];
+  const ladder = progressiveGalleryLadders.find((item) => item.test.test(path));
+  if (ladder) {
+    image.src = shopAssetUrl(ladder.src);
+    image.dataset.webpSrcset = toShopSrcset(ladder.webpSrcset);
+    image.dataset.srcset = toShopSrcset(ladder.srcset);
+    image.width = ladder.width;
+    image.height = ladder.height;
+    return;
+  }
+
+  image.src = shopAssetUrl(source);
+  const size = galleryImageSizes[path];
+  if (size) {
+    image.width = size[0];
+    image.height = size[1];
+  }
+}
+
+function upgradeImage(image) {
+  const srcset = supportsWebp ? image.dataset.webpSrcset : image.dataset.srcset;
+  if (!srcset) return;
+
+  const candidates = srcset.split(",").map((entry) => {
+    const [src, width] = entry.trim().split(/\s+/);
+    return { src, width: Number(width.replace("w", "")) };
+  });
+  const neededWidth = Math.ceil(image.getBoundingClientRect().width * window.devicePixelRatio);
+  const target = candidates.find((candidate) => candidate.width >= neededWidth) || candidates.at(-1);
+
+  if (image.dataset.loadedSrc === target.src) return;
+
+  image.closest(".gallery-slide")?.classList.add("is-loading");
+  image.dataset.loadedSrc = target.src;
+  image.dataset.upgraded = "true";
+  image.src = target.src;
+}
+
+function observeProgressiveImages() {
+  progressiveImages = [...productGrid.querySelectorAll(".gallery-slide img[data-srcset], .gallery-slide img[data-webp-srcset]")];
+
+  if ("IntersectionObserver" in window) {
+    progressiveImageObserver?.disconnect();
+    progressiveImageObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        upgradeImage(entry.target);
+        progressiveImageObserver.unobserve(entry.target);
+      });
+    }, { rootMargin: "800px 0px" });
+    progressiveImages.forEach((image) => progressiveImageObserver.observe(image));
+  } else {
+    progressiveImages.forEach(upgradeImage);
+  }
+}
 
 function finishPageLoader() {
   if (!shouldRunPageLoader || loaderQueued) return;
@@ -243,8 +349,9 @@ function scheduleGalleryNudge(product) {
     const card = [...document.querySelectorAll(".product-card")]
       .find((item) => item.dataset.productId === product.id);
     const rect = card?.getBoundingClientRect();
-    const centerY = window.innerHeight / 2;
-    if (!rect || rect.top > centerY || rect.bottom <= centerY) return;
+    const viewportHeight = window.innerHeight;
+    const visible = rect ? Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0) : 0;
+    if (!rect || visible < Math.min(120, viewportHeight * 0.2)) return;
 
     const gallery = card.querySelector(".product-gallery");
     if (galleryNudges.get(gallery)?.()) nudgedProducts.add(product.id);
@@ -280,12 +387,17 @@ function createGallery(product) {
     : [product.imageUrl].filter(Boolean);
 
   images.forEach((source, index) => {
-    const slide = element("figure", "gallery-slide");
+    const slide = element("figure", "gallery-slide is-loading");
     slide.setAttribute("aria-hidden", String(index !== 0));
     const image = document.createElement("img");
-    image.src = `..${source}`;
+    applyGallerySource(image, source);
     image.alt = index ? `${product.name}, alternate view` : product.name;
     image.loading = "lazy";
+    image.decoding = "async";
+    image.addEventListener("load", () => {
+      slide.classList.remove("is-loading");
+    });
+    if (image.complete) slide.classList.remove("is-loading");
     slide.append(image);
     track.append(slide);
   });
@@ -403,6 +515,7 @@ function renderProducts() {
 
   setActiveProduct(products[0]);
   observeProducts();
+  observeProgressiveImages();
 }
 
 function renderDock() {
@@ -544,11 +657,21 @@ function observeProducts() {
   const update = () => {
     productFrame = undefined;
     updateDockVisibility();
-    const centerY = window.innerHeight / 2;
-    const card = [...document.querySelectorAll(".product-card")].find((item) => {
+    const viewportHeight = window.innerHeight;
+    const centerY = viewportHeight / 2;
+    let card;
+    let bestScore = -Infinity;
+    for (const item of document.querySelectorAll(".product-card")) {
       const rect = item.getBoundingClientRect();
-      return rect.top <= centerY && rect.bottom > centerY;
-    });
+      const visible = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0);
+      if (visible <= 0) continue;
+      const containsCenter = rect.top <= centerY && rect.bottom > centerY;
+      const score = (containsCenter ? viewportHeight : 0) + visible;
+      if (score > bestScore) {
+        card = item;
+        bestScore = score;
+      }
+    }
     setActiveProduct(productById(card?.dataset.productId));
   };
 
@@ -957,6 +1080,12 @@ cartItems.addEventListener("click", (event) => {
   } else {
     changeQuantity(button.dataset.productId, -(cart[button.dataset.productId] || 0));
   }
+});
+
+window.addEventListener("resize", () => {
+  progressiveImages.forEach((image) => {
+    if (image.dataset.upgraded === "true") upgradeImage(image);
+  });
 });
 
 cartToggle.addEventListener("click", openCart);

@@ -310,6 +310,30 @@ test("product imagery uses understated horizontal galleries", () => {
   assert.doesNotMatch(js, /vase-alt\.jpg/);
 });
 
+test("shop galleries keep intrinsic photo ratios and reuse launch progressive upgrades", () => {
+  assert.doesNotMatch(css, /\.product-card\s*{[^}]*height:\s*100vh/);
+  assert.doesNotMatch(css, /\.product-card\s*{[^}]*height:\s*100svh/);
+  assert.match(css, /\.gallery-slide img\s*{[\s\S]*width:\s*100%;[\s\S]*height:\s*auto;/);
+  assert.doesNotMatch(css, /\.gallery-slide img\s*{[^}]*object-fit:\s*cover/);
+  assert.match(css, /\.gallery-track\s*{[\s\S]*align-items:\s*flex-start;/);
+  assert.match(js, /function upgradeImage\(image\)/);
+  assert.match(js, /neededWidth = Math\.ceil\(image\.getBoundingClientRect\(\)\.width \* window\.devicePixelRatio\)/);
+  assert.match(js, /rootMargin:\s*"800px 0px"/);
+  assert.match(js, /image\.dataset\.webpSrcset = toShopSrcset\(ladder\.webpSrcset\)/);
+  assert.match(js, /image\.dataset\.srcset = toShopSrcset\(ladder\.srcset\)/);
+  assert.match(landingHtml, /render-6-640\.webp 398w/);
+  assert.match(js, /render-6-640\.webp 398w, \/assets\/responsive\/render-6-1280\.webp 796w, \/assets\/responsive\/render-6-1920\.webp 1195w, \/assets\/responsive\/render-6-full\.webp 3088w/);
+  assert.match(js, /render-3-900\.webp 603w, \/assets\/responsive\/render-3-1600\.webp 1071w, \/assets\/responsive\/render-3-full\.webp 2334w/);
+  assert.match(js, /round-vase-900\.webp 759w, \/assets\/responsive\/round-vase-1600\.webp 1349w, \/assets\/responsive\/round-vase-full\.webp 1517w/);
+  assert.match(js, /"\/assets\/shop\/660-vase-01\.jpg": \[1074, 1920\]/);
+  assert.match(js, /"\/assets\/shop\/120-vase-01\.jpg": \[1607, 2400\]/);
+  assert.match(js, /"\/assets\/shop\/120-vase-02\.jpg": \[2242, 2400\]/);
+  assert.match(js, /"\/assets\/shop\/490-vase-01\.jpg": \[1080, 1920\]/);
+  assert.match(js, /"\/assets\/shop\/490-vase-02\.jpg": \[1080, 1920\]/);
+  assert.doesNotMatch(js, /test: \/\\\/assets\\\/shop/);
+  assert.match(js, /containsCenter \? viewportHeight : 0\) \+ visible/);
+});
+
 test("the intro reuses the landing-page explore callout", () => {
   assert.match(html, /class="explore" href="#products">Explore more below<\/a>/);
   assert.match(css, /\.explore\s*{[\s\S]*position:\s*fixed;[\s\S]*bottom:\s*clamp\(32px, 4svh, 42px\)/);
