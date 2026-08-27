@@ -12,13 +12,13 @@ const adminJs = fs.readFileSync(path.join(root, "website/shop/admin/admin.js"), 
 const adminCss = fs.readFileSync(path.join(root, "website/shop/admin/admin.css"), "utf8");
 const landingHtml = fs.readFileSync(path.join(root, "website/index.html"), "utf8");
 const landingCss = fs.readFileSync(path.join(root, "website/styles.css"), "utf8");
+const heroJs = fs.readFileSync(path.join(root, "website/hero.js"), "utf8");
 const docsCss = fs.readFileSync(path.join(root, "website/shop/admin/docs/docs.css"), "utf8");
 const metadata = fs.readFileSync(path.join(root, "lib/shop/product-metadata.js"), "utf8");
 const catalog = fs.readFileSync(path.join(root, "lib/shop/catalog.js"), "utf8");
 
 test("major responsive type and spacing scale fluidly", () => {
   assert.match(landingCss, /\.bottom-signup\s*{[\s\S]*padding:\s*clamp\(/);
-  assert.match(css, /\.shop-intro\s*{[\s\S]*padding:\s*clamp\(/);
   assert.match(css, /\.shop-footer\s*{[^}]*padding:\s*clamp\(/);
   assert.match(adminCss, /\.panel-heading h1\s*{[^}]*font-size:clamp\(/);
   assert.match(docsCss, /\.documentation h2\s*{[^}]*font-size:clamp\(/);
@@ -358,7 +358,7 @@ test("shop galleries keep intrinsic photo ratios and reuse launch progressive up
 });
 
 test("the intro reuses the landing-page explore callout", () => {
-  assert.match(html, /class="explore" href="#products">Explore more below<\/a>/);
+  assert.match(html, /class="explore" href="#products">Explore available products<\/a>/);
   assert.match(css, /\.explore\s*{[\s\S]*position:\s*fixed;[\s\S]*bottom:\s*clamp\(32px, 4svh, 42px\)/);
   assert.match(js, /const progress = Math\.max\(0, Math\.min\(1, window\.scrollY \/ introHandoffDistance\)\)/);
   assert.match(js, /explore\.style\.opacity = 1 - progress/);
@@ -373,8 +373,26 @@ test("explore callouts share a subtle motion-safe shimmer", () => {
   }
 });
 
-test("the desktop collection heading uses the requested light weight", () => {
-  assert.match(css, /@media \(min-width: 801px\)\s*{[\s\S]*\.shop-intro h1\s*{\s*font-weight:\s*200;/);
+test("the shop opens with the launch hero, then numbered editions", () => {
+  assert.match(html, /class="hero shop-intro"/);
+  assert.match(html, /class="thorn"[\s\S]*render-7-base-11-958\.mp4/);
+  assert.match(html, /class="signup signup-header"/);
+  assert.match(html, /src="\.\.\/hero\.js\?v=1"/);
+  assert.match(html, /href="\.\.\/styles\.css\?v=23"/);
+  assert.match(heroJs, /fetch\("\/api\/subscribe"/);
+  assert.match(heroJs, /IntersectionObserver/);
+  assert.match(landingHtml, /src="hero.js\?v=1"/);
+  assert.match(landingHtml, /class="explore" href="#below">Explore more below<\/a>/);
+  assert.match(landingHtml, /class="visual-image/);
+  assert.match(landingHtml, /class="body-copy"/);
+  const heroIndex = html.indexOf('class="hero shop-intro"');
+  const exploreIndex = html.indexOf("Explore available products");
+  const productsIndex = html.indexOf('id="products" class="product-grid"');
+  assert.ok(heroIndex !== -1 && exploreIndex > heroIndex && productsIndex > exploreIndex);
+  assert.doesNotMatch(html.slice(heroIndex, productsIndex), /visual-image|body-copy|class="shop-link"|The shop is open/);
+  assert.doesNotMatch(html, /class="visual-image"|class="body-copy"/);
+  assert.match(css, /\.shop-intro\s*{[\s\S]*overflow:\s*hidden;/);
+  assert.match(js, /shopDock\.getBoundingClientRect\(\)\.top - shopIntro\.getBoundingClientRect\(\)\.bottom/);
 });
 
 test("admin login and dashboard honor hidden state", () => {

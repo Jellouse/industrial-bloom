@@ -8,27 +8,57 @@
     <script>
       document.documentElement.classList.add("is-loading");
     </script>
-    <link rel="stylesheet" href="shop.css?v=115">
+    <link rel="stylesheet" href="../styles.css?v=23">
+    <link rel="stylesheet" href="shop.css?v=116">
   </head>
   <body>
     <div class="site-loader" aria-hidden="true">
       <div class="loader-mask"></div>
     </div>
 
-    <header class="shop-header is-at-top">
-      <a class="brand" href="../" aria-label="Industrial Bloom home">
-        <img class="shop-logo" src="../assets/logo.png" width="1394" height="1394" alt="">
-      </a>
-    </header>
-
     <main>
-      <section class="shop-intro">
-        <p class="eyebrow">Objects for living things</p>
-        <h1>Industrial Bloom</h1>
-        <p>A series of vases accentuating the contrast between nature and industry.</p>
-        <p class="mode-note" hidden></p>
+      <section class="hero shop-intro" aria-labelledby="title">
+        <div class="thorn-frame" aria-hidden="true">
+          <video
+            class="thorn"
+            muted
+            autoplay
+            loop
+            playsinline
+            preload="metadata"
+            poster="/assets/video/render-7-base-11-poster.jpg"
+            width="1598"
+            height="1710"
+          >
+            <source src="/assets/video/render-7-base-11-958.mp4" type="video/mp4" media="(max-width: 720px)">
+            <source src="/assets/video/render-7-base-11-1598.mp4" type="video/mp4">
+          </video>
+        </div>
+
+        <header class="shop-header is-at-top">
+          <a class="brand" href="../" aria-label="Industrial Bloom home">
+            <img class="shop-logo" src="../assets/logo.png" width="1394" height="1394" alt="">
+          </a>
+        </header>
+
+        <div class="hero-copy">
+          <section class="intro">
+            <h1 id="title">Industrial Bloom</h1>
+            <p class="tagline">A series of vases accentuating the contrast between nature and industry.</p>
+          </section>
+
+          <form class="signup signup-header" novalidate>
+            <label class="sr-only" for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="Email" required>
+            <button type="submit">Sign up</button>
+          </form>
+          <p class="launch-note"></p>
+        </div>
+
+        <div class="invert-circle" aria-hidden="true"></div>
       </section>
-      <a class="explore" href="#products">Explore more below</a>
+      <a class="explore" href="#products">Explore available products</a>
+      <p class="mode-note" hidden></p>
 
       <section id="products" class="product-grid" aria-live="polite" aria-busy="true"></section>
     </main>
@@ -120,7 +150,8 @@
         <a href="../datenschutz/">Datenschutz</a>
       </nav>
     </footer>
+    <script src="../hero.js?v=1"></script>
     <script src="shop-storage.js?v=1"></script>
-    <script src="shop.js?v=94"></script>
+    <script src="shop.js?v=95"></script>
   </body>
 </html>
