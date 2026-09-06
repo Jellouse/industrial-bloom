@@ -29,14 +29,15 @@ The shop is intentionally custom. Do not introduce a template storefront or larg
 - Core phrase: “Objects for living things.”
 - Concept: nature against industry; delicate silhouettes against extruded aluminium.
 - Tone: restrained, premium, direct, slightly experimental.
-- Typography: Unica77 for interface/display; Anonymous Pro for technical product metadata.
+- Typography: Unica77 for interface and shop-scale display (`clamp(32px, 5.2vw, 56px)` for page titles); Anonymous Pro for eyebrows, serials, and technical metadata.
+- Surface: shared paper `#f6f4ef`, ink `#111`, muted `#6a6862`. Page gutter `--page-pad: clamp(24px, 5.5vw, 72px)`.
 - Logo: the circular Industrial Bloom mark. On image areas it uses difference blending.
 - Expanded white panels use one restrained shadow token; transparent controls rely on the shared radial scrim.
 - Motion: smooth and deliberate. Avoid permanent JavaScript animation loops. Pause media when fully off screen and respect reduced motion.
 - Shop imagery: large, native-aspect product photographs in an editorial grid (featured first edition, then two columns). Horizontal galleries stay understated: swipe/keyboard only, no arrows or dots.
 - Shop controls: each card shows price plus Add and Choose. Choose opens a side panel with gallery, copy, edition, and the technical drawing. Add reserves a serial and updates the header Selection count. A series/pack block can add one available edition of each type.
 - Intro transition: “Explore more below” fades over the first 120px of scroll.
-- Header: wordmark plus sparse links and a Selection trigger. Motion stays restrained (loader, hover logo turn, drawer slide). Respect reduced motion.
+- Header: sparse wordmark on a transparent paper field, plus a few text links and a Selection trigger. Motion stays restrained (loader, hover logo turn, drawer slide). Respect reduced motion.
 - Mobile Safari is a priority. Avoid fragile viewport hacks and fixed bottom UI behind browser controls.
 
 ## 4. Products
@@ -80,7 +81,7 @@ The repository root must be the Vercel deployment root. Deploying from `website/
 
 | Route | Purpose |
 | --- | --- |
-| `/` | Brand landing page, newsletter signup, and shop entry |
+| `/` | Independent shop front: quiet catalog intro, framed Type 660 well, edition grid, newsletter signup |
 | `/shop/` | Product galleries and cart |
 | `/shop/success.html` | Checkout confirmation/status |
 | `/kit/` | Curated kit/affiliate page |
@@ -108,7 +109,7 @@ Important API routes:
 
 ## 7. Storefront logic
 
-`website/shop/shop.js` loads `/api/shop/products` and builds an editorial product grid: Type 660 is featured full-width, then Type 120, 490, and 28 sit in a two-column shop. Each card renders the API gallery, name, description, live price, next serial (`N° x of y`), and Add / Choose. Galleries use an explicit index and horizontal transforms for swipe, drag, and keyboard navigation. After a multi-image product is in view for 2.4 seconds, its first image gives one subtle horizontal peek and returns; interaction cancels the hint, and reduced-motion users never receive it. The homepage (`/`) uses the same paper, type, and header language, with a framed launch video used only as a featured Type 660 still-motion well — not a full-viewport cinematic hero.
+`website/shop/shop.js` loads `/api/shop/products` and builds an editorial product grid: Type 660 is featured full-width, then Type 120, 490, and 28 sit in a two-column shop. Each card renders the API gallery, name, description, live price, next serial (`N° x of y`), and Add / Choose. Galleries use an explicit index and horizontal transforms for swipe, drag, and keyboard navigation. After a multi-image product is in view for 2.4 seconds, its first image gives one subtle horizontal peek and returns; interaction cancels the hint, and reduced-motion users never receive it. The homepage (`/`) is a product-first shop front in the same paper, Unica77 / Anonymous Pro, and sparse-header language. The launch video stays framed inside a Type 660 well — not a full-viewport cinematic hero. Newsletter and footer stay quiet: workshop notes, Humansize, EU-only shipping, German legal links.
 
 On the first website entry of a browsing session, the teaser or shop opens with a short logo loader after its content and fonts are ready. The actual fixed-header logo starts centered, spins slowly, decelerates to exactly 90 degrees, and rises with the mask into its normal position without swapping elements. Both pages share one session flag, so later navigation skips the loader without a flash. The loader includes a reduced-motion fallback and a timeout that prevents stalled loading from trapping the page.
 

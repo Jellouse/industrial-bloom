@@ -23,7 +23,8 @@
   --ink: #111;
   --muted: #6a6862;
   --rule: rgba(17, 17, 17, 0.12);
-  --page-pad: clamp(20px, 4vw, 48px);
+  --well: #ebe8e1;
+  --page-pad: clamp(24px, 5.5vw, 72px);
   --page-max: 1280px;
 }
 
@@ -39,6 +40,7 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: "Unica77 LL", "Helvetica Neue", Arial, sans-serif;
+  font-synthesis: none;
 }
 
 a { color: inherit; }
@@ -87,8 +89,8 @@ html.is-revealing .loader-mask {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: clamp(18px, 3vw, 28px) var(--page-pad);
-  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  padding: clamp(20px, 3.2vw, 32px) var(--page-pad);
+  background: transparent;
 }
 
 html.is-loading .site-header {
@@ -116,7 +118,7 @@ html.is-loading .logo-anchor {
 }
 
 html.is-revealing .logo-anchor {
-  top: clamp(18px, 3vw, 28px);
+  top: clamp(20px, 3.2vw, 32px);
   left: var(--page-pad);
   transform: none;
   transition:
@@ -127,30 +129,33 @@ html.is-revealing .logo-anchor {
 
 .logo {
   display: block;
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
   object-fit: contain;
   transform: rotate(90deg);
 }
 
-.wordmark { font-size: 15px; letter-spacing: -0.02em; }
+.wordmark {
+  font-size: 14px;
+  letter-spacing: -0.02em;
+}
 
 .header-nav {
   display: flex;
-  gap: 18px;
+  gap: 22px;
   font-size: 13px;
 }
 
 .header-nav a { text-decoration: none; }
 
 .masthead {
-  max-width: 720px;
+  max-width: var(--page-max);
   margin: 0 auto;
-  padding: clamp(92px, 9vw, 116px) var(--page-pad) clamp(48px, 6vw, 72px);
+  padding: clamp(88px, 10vw, 120px) var(--page-pad) clamp(28px, 4vw, 40px);
 }
 
 .eyebrow {
-  margin: 0 0 18px;
+  margin: 0 0 12px;
   font-family: "Anonymous Pro", monospace;
   font-size: 11px;
   letter-spacing: 0.14em;
@@ -159,38 +164,41 @@ html.is-revealing .logo-anchor {
 
 h1 {
   margin: 0;
-  font-size: clamp(44px, 8vw, 104px);
+  font-size: clamp(32px, 5.2vw, 56px);
   font-weight: 400;
-  letter-spacing: -0.045em;
-  line-height: 0.92;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
 }
 
 .tagline {
-  max-width: 440px;
-  margin: clamp(22px, 2.4vw, 28px) 0 0;
-  font-size: clamp(15px, 1.35vw, 17px);
-  line-height: 1.45;
+  max-width: 36ch;
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.5;
 }
 
 .launch-note {
-  margin: 22px 0 0;
+  margin: 18px 0 0;
   font-size: 15px;
 }
 
 .featured {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(16rem, 0.8fr);
-  gap: clamp(24px, 4vw, 56px);
+  grid-template-columns: minmax(0, 1.15fr) minmax(14rem, 0.85fr);
+  gap: clamp(28px, 5vw, 72px);
   align-items: end;
   max-width: var(--page-max);
   margin: 0 auto;
-  padding: 0 var(--page-pad) clamp(64px, 8vw, 120px);
+  padding: 0 var(--page-pad) clamp(72px, 9vw, 128px);
 }
 
 .featured-media {
   margin: 0;
+  max-width: 34rem;
+  padding: clamp(12px, 1.8vw, 20px);
   overflow: hidden;
-  background: #ebe8e1;
+  background: var(--well);
 }
 
 .featured-media video,
@@ -274,10 +282,10 @@ h1 {
 .home-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: clamp(48px, 7vw, 96px) clamp(20px, 3vw, 40px);
+  gap: clamp(56px, 8vw, 112px) clamp(24px, 4vw, 56px);
   max-width: var(--page-max);
   margin: 0 auto;
-  padding: 0 var(--page-pad) clamp(72px, 10vw, 140px);
+  padding: 0 var(--page-pad) clamp(88px, 12vw, 160px);
 }
 
 .home-card { display: grid; align-content: start; }
@@ -286,7 +294,7 @@ h1 {
   position: relative;
   margin: 0 0 18px;
   overflow: hidden;
-  background: #ebe8e1;
+  background: var(--well);
 }
 
 .visual-image img {
@@ -298,13 +306,13 @@ h1 {
 .home-series {
   max-width: 640px;
   margin: 0 auto;
-  padding: 0 var(--page-pad) clamp(80px, 10vw, 140px);
+  padding: 0 var(--page-pad) clamp(88px, 12vw, 160px);
 }
 
 .bottom-signup {
   max-width: 640px;
   margin: 0 auto;
-  padding: clamp(48px, 6vw, 80px) var(--page-pad) clamp(80px, 10vw, 140px);
+  padding: clamp(48px, 6vw, 80px) var(--page-pad) clamp(88px, 12vw, 160px);
 }
 
 .signup {
@@ -337,19 +345,31 @@ h1 {
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: flex-end;
-  gap: 16px 32px;
-  padding: clamp(28px, 3vw, 48px) var(--page-pad);
+  gap: 20px 40px;
+  padding: clamp(32px, 4vw, 56px) var(--page-pad);
   border-top: 1px solid var(--rule);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .site-footer > div { display: grid; gap: 8px; }
-.shipping-note { max-width: 42ch; margin: 0; color: var(--muted); }
+
+.studio-note,
+.shipping-note {
+  max-width: 46ch;
+  margin: 0;
+  color: var(--muted);
+}
+
+.corp-id {
+  font-family: "Anonymous Pro", monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
 
 .site-legal {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 14px;
+  gap: 8px 16px;
 }
 
 .site-legal a {
@@ -357,9 +377,17 @@ h1 {
   opacity: 0.55;
 }
 
+@media (hover: hover) {
+  .header-nav a:hover,
+  .site-legal a:hover,
+  .text-cta:hover,
+  .home-card a:hover { opacity: 0.55; }
+}
+
 @media (max-width: 800px) {
   .featured,
   .home-grid { grid-template-columns: 1fr; }
+  .featured-media { max-width: none; }
   .explore { bottom: 16px; }
 }
 
