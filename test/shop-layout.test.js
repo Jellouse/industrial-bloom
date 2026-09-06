@@ -30,55 +30,73 @@ test("the old bottom gradient and root image mirror are removed", () => {
   assert.doesNotMatch(js, /--active-product-image|mirroredProductId/);
 });
 
-test("product controls use a root-level Safari-safe readability scrim", () => {
+test("the editorial shop uses a sparse header instead of a floating claim dock", () => {
   assert.match(html, /viewport-fit=cover/);
-  assert.match(html, /class="dock-scrim" aria-hidden="true"/);
-  assert.match(html, /class="shop-dock-positioner"[\s\S]*class="shop-dock"/);
-  assert.match(css, /\.dock-scrim\s*{[\s\S]*position:\s*fixed;[\s\S]*z-index:\s*28;[\s\S]*height:\s*calc\(var\(--scrim-viewport-height\) \+ 180px\);[\s\S]*radial-gradient\(/);
-  assert.match(css, /ellipse 360px 300px at 50% calc\(var\(--scrim-viewport-height\) - var\(--dock-bottom\) - 98px\)/);
-  assert.match(css, /@supports \(height:\s*100lvh\)\s*{[\s\S]*--scrim-viewport-height:\s*100lvh;/);
-  assert.match(css, /\.shop-dock-positioner\s*{[\s\S]*position:\s*fixed;[\s\S]*bottom:\s*var\(--dock-bottom\);[\s\S]*left:\s*50%;[\s\S]*width:\s*0;[\s\S]*height:\s*0;/);
-  assert.doesNotMatch(js, /visualViewport|syncVisualViewport/);
-  assert.match(css, /\.shop-dock\s*{[\s\S]*position:\s*absolute;[\s\S]*top:\s*0;[\s\S]*left:\s*0;[\s\S]*width:\s*330px;/);
-  assert.match(css, /\.shop-dock\s*{[\s\S]*translate:\s*-50% -100%;/);
-  assert.match(css, /\.shop-dock:is\(\.is-cart-open, \.is-info-open\)\s*{\s*translate:\s*-50% calc\(-50dvh \+ var\(--dock-bottom\) - 50%\);/);
-  assert.match(css, /\.info-toggle\s*{[\s\S]*position:\s*absolute;/);
-  assert.doesNotMatch(css, /\.shop-dock\s*{[^}]*translate3d\(-50%, -50%, 0\)/);
-  assert.doesNotMatch(css, /\.shop-dock-positioner::before|--dock-gradient-clearance/);
-  assert.doesNotMatch(css, /\.shop-dock::(?:before|after)/);
-  assert.doesNotMatch(css, /bottom:\s*calc\(-240px - env\(safe-area-inset-bottom\)\)/);
-  assert.match(js, /document\.documentElement\.style\.setProperty\("--dock-opacity", opacity\.toFixed\(3\)\)/);
-  assert.doesNotMatch(css, /is-switching/);
-  assert.match(css, /\.shop-header\s*{[\s\S]*z-index:\s*100;[\s\S]*mix-blend-mode:\s*difference;/);
+  assert.match(html, /class="shop-header is-at-top"/);
+  assert.match(html, /class="wordmark">Industrial Bloom/);
+  assert.match(html, /class="cart-toggle"[\s\S]*aria-controls="cart"/);
+  assert.match(css, /\.shop-header\s*{[\s\S]*position:\s*fixed;[\s\S]*z-index:\s*100;/);
+  assert.match(css, /\.product-grid\s*{[\s\S]*display:\s*grid;[\s\S]*grid-template-columns:\s*1fr 1fr;/);
+  assert.doesNotMatch(html, /shop-dock|dock-scrim|dock-morph|dock-add/);
+  assert.doesNotMatch(css, /\.shop-dock-positioner|\.dock-scrim|\.dock-morph/);
+  assert.doesNotMatch(js, /visualViewport|syncVisualViewport|syncMorphOrigin|setMorphOrigin/);
 });
 
-test("product metadata does not duplicate the Type prefix", () => {
-  assert.doesNotMatch(html, /<span>Type <strong class="dock-product-name"/);
-  assert.match(html, /class="dock-product-copy"[\s\S]*class="dock-product-name"[\s\S]*class="dock-product-description"/);
-  assert.match(js, /dockDescription\.textContent = activeProduct\.description/);
-  assert.match(css, /\.dock-product-copy\s*{[\s\S]*text-align:\s*center;/);
-  assert.match(css, /--ui-shadow:\s*0 6px 24px rgba\(0, 0, 0, 0\.12\)/);
-  assert.doesNotMatch(css, /--button-shadow|--button-backdrop|\.dock-product-copy\s*{[^}]*text-shadow/);
-  assert.match(css, /\.dock-morph\s*{[\s\S]*box-shadow:\s*var\(--ui-shadow\)/);
+test("product cards expose price plus Add and Choose", () => {
+  assert.match(js, /element\("article", index === 0 \? "product-card is-featured" : "product-card"\)/);
+  assert.match(js, /element\("p", "product-price", money\(product\.priceCents/);
+  assert.match(js, /element\("button", "card-add", "Add"\)/);
+  assert.match(js, /element\("button", "card-choose", "Choose"\)/);
+  assert.match(js, /add\.addEventListener\("click", \(\) => addProduct\(product\)\)/);
+  assert.match(js, /choose\.addEventListener\("click", \(\) => openInfo\(product\)\)/);
+  assert.match(js, /infoClaim\.addEventListener\("click", \(\) => closeInfo\(\(\) => addProduct\(activeProduct\)\)\)/);
 });
 
-test("the dock crossfades with the intro prompt", () => {
-  assert.match(css, /\.shop-intro\s*{[\s\S]*z-index:\s*35;/);
-  assert.match(css, /\.shop-dock-positioner\s*{[\s\S]*z-index:\s*30;/);
-  assert.match(css, /\.shop-dock\s*{[\s\S]*opacity:\s*var\(--dock-opacity, 0\);[\s\S]*pointer-events:\s*none;/);
-  assert.match(js, /const clearance = shopDock\.getBoundingClientRect\(\)\.top - shopIntro\.getBoundingClientRect\(\)\.bottom/);
-  assert.match(js, /const clearanceProgress = Math\.max\(0, Math\.min\(1, clearance \/ 48\)\)/);
-  assert.match(js, /const introHandoffDistance = 120;/);
-  assert.match(js, /const introProgress = Math\.max\(0, Math\.min\(1, window\.scrollY \/ introHandoffDistance\)\)/);
-  assert.match(js, /const opacity = Math\.min\(clearanceProgress, introProgress\)/);
-  assert.match(js, /classList\.toggle\("is-dock-interactive", opacity >= 0\.98\)/);
-  assert.doesNotMatch(js, /dockHideTimer|isOverPictures|is-visible/);
+test("the series pack can add available editions or return to the grid", () => {
+  assert.match(html, /id="series" class="collection"/);
+  assert.match(html, /class="collection-add"[\s\S]*Add/);
+  assert.match(html, /class="collection-choose"[\s\S]*Choose/);
+  assert.match(js, /async function addSeries\(\)/);
+  assert.match(js, /collectionChoose\.addEventListener\("click"/);
+  assert.match(js, /getElementById\("editions"\)\?\.scrollIntoView/);
+});
+
+test("the shop newsletter posts to Brevo through the existing subscribe API", () => {
+  assert.match(html, /id="newsletter" class="shop-newsletter"/);
+  assert.match(html, /class="signup"/);
+  assert.match(js, /fetch\("\/api\/subscribe"/);
+});
+
+test("Choose opens a side panel with verified product drawings", () => {
+  assert.match(html, /id="product-info"[\s\S]*role="dialog"/);
+  assert.match(html, /class="technical-image"/);
+  assert.match(html, /class="info-claim"[\s\S]*info-claim-edition/);
+  assert.match(css, /\.product-info\s*{[\s\S]*position:\s*fixed;/);
+  assert.match(js, /function openInfo\(product\)/);
+  assert.match(js, /const technical = activeProduct\?\.technical/);
+  assert.match(js, /technicalImage\.src = `\.\.\$\{technical\.imageUrl\}`/);
+  assert.doesNotMatch(html, /dimension-height|dimension-width|technical-caption/);
+  assert.doesNotMatch(js, /Isometric line drawing · source STEP/);
+  assert.match(metadata, /"round-vase":\s*{[\s\S]*profile:\s*"4 × 90° quarter extrusions · Ø80 mm assembled"/);
+  assert.match(metadata, /"thorn-vase":\s*{[\s\S]*height:\s*"200 mm"/);
+  for (const type of ["120", "660", "490", "28"]) {
+    assert.equal(fs.existsSync(path.join(root, `website/assets/shop/technical/type-${type}.png`)), true);
+  }
+});
+
+test("the cart is a side drawer with checkout, not a morphing pill", () => {
+  assert.match(html, /id="cart"[\s\S]*role="dialog"/);
+  assert.match(css, /\.cart,[\s\S]*\.product-info\s*{[\s\S]*position:\s*fixed;[\s\S]*transform:\s*translateX\(100%\)/);
+  assert.match(css, /\.cart\.is-open,[\s\S]*\.product-info\.is-open\s*{[\s\S]*transform:\s*translateX\(0\)/);
+  assert.match(css, /\.checkout\s*{[\s\S]*height:\s*48px;[\s\S]*font-size:\s*15px;/);
+  assert.match(css, /--checkout-radius:\s*3px;/);
+  assert.match(js, /function openCart\(\)/);
+  assert.match(js, /function closeCart\(onClosed\)/);
+  assert.match(js, /cartBackdrop\.addEventListener\("click", \(\) => closeOpenPanel\(\)\)/);
 });
 
 test("the logo has a stable top state during elastic scrolling", () => {
   assert.match(html, /shop-header is-at-top/);
-  assert.match(css, /\.shop-header\.is-at-top\s*{\s*mix-blend-mode:\s*normal;/);
-  assert.match(css, /\.shop-header\.is-at-top \.shop-logo\s*{\s*filter:\s*none;/);
   assert.match(js, /shopHeader\.classList\.toggle\("is-at-top", window\.scrollY <= 0\)/);
 });
 
@@ -90,12 +108,11 @@ test("the shop opens with a short logo-led mask reveal", () => {
   assert.match(html, /class="site-loader"[\s\S]*class="loader-mask"/);
   assert.doesNotMatch(html, /loader-mark|loader-logo/);
   assert.match(css, /html\.is-revealing \.loader-mask\s*{[\s\S]*translateY\(-100%\)[\s\S]*900ms cubic-bezier\(0\.53, 0, 0\.12, 0\.99\)/);
-  assert.match(css, /html\.is-loading \.shop-header\s*{[\s\S]*top:\s*50%;[\s\S]*translate\(-50%, -50%\)/);
-  assert.match(css, /html\.is-revealing \.shop-header\s*{[\s\S]*top:\s*clamp\(24px, 4svh, 34px\);[\s\S]*translateX\(-50%\)/);
+  assert.match(css, /html\.is-loading \.shop-header \.brand\s*{[\s\S]*top:\s*50%;[\s\S]*translate\(-50%, -50%\)/);
   assert.match(js, /const loaderSpinDuration = 4800/);
   assert.match(js, /const shouldRunPageLoader = document\.documentElement\.classList\.contains\("is-loading"\)/);
   assert.match(js, /const targetAngle = currentAngle <= 90 \? 90 : 450/);
-  assert.match(js, /logoRotation = 90;\s*logoTargetRotation = 90;\s*renderLogo\(\);/);
+  assert.match(js, /logoRotation = 90;\s*renderLogo\(\);/);
   assert.match(js, /const minimumTime = prefersReducedMotion \? 0 : 650/);
   assert.match(js, /document\.documentElement\.classList\.remove\("is-loading", "is-revealing"\)/);
   assert.match(js, /\.finally\(finishPageLoader\)/);
@@ -118,138 +135,20 @@ test("the public shop footer hides admin and links legal stubs", () => {
   assert.match(html, /href="\.\.\/widerruf\/">Widerruf/);
   assert.match(html, /href="\.\.\/versand\/">Versand/);
   assert.match(html, /href="\.\.\/datenschutz\/">Datenschutz/);
+  assert.match(html, /Part of Humansize CORP/);
+  assert.match(html, /No shipping to the UK, US, or Japan/);
 });
 
 test("the teaser shares the one-time logo loader", () => {
   assert.match(landingHtml, /industrial-bloom-loader-seen/);
   assert.match(landingHtml, /class="site-loader"[\s\S]*class="loader-mask"/);
   assert.match(landingHtml, /class="logo-anchor"[\s\S]*class="logo"/);
-  assert.match(landingCss, /\.logo-anchor\s*{[\s\S]*mix-blend-mode:\s*difference;/);
   assert.match(landingCss, /html\.is-loading \.logo-anchor\s*{[\s\S]*top:\s*50%;[\s\S]*translate\(-50%, -50%\)/);
   assert.match(landingHtml, /const loaderSpinDuration = 4800/);
   assert.match(landingHtml, /logoRotation = 90;[\s\S]*renderLogoRotation\(\);[\s\S]*classList\.remove\("is-loading", "is-revealing"\)/);
 });
 
-test("the cart count sits on the Claim button corner", () => {
-  assert.match(html, /dock-primary[\s\S]*dock-add[\s\S]*cart-toggle/);
-  assert.match(css, /\.dock-actions\s*{[\s\S]*position:\s*relative;/);
-  assert.match(css, /--info-group-offset:\s*23\.5px;/);
-  assert.match(css, /\.dock-actions\s*{[\s\S]*transform:\s*translateX\(var\(--info-group-offset\)\);/);
-  assert.match(css, /\.dock-primary\s*{[\s\S]*position:\s*static;/);
-  assert.match(css, /\.cart-count\s*{[\s\S]*top:\s*-9px;[\s\S]*right:\s*-9px;[\s\S]*place-items:\s*center;/);
-  assert.match(html, /mask id="dock-outline-mask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse"/);
-  assert.match(html, /rect class="dock-outline-shape" mask="url\(#dock-outline-mask\)"/);
-  assert.match(html, /mask id="selection-surface-mask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse"/);
-  assert.match(html, /rect class="selection-surface-shape" fill="white" mask="url\(#selection-surface-mask\)"/);
-  assert.match(css, /shop-dock:not\(\.is-cart-open\) \.dock-morph\s*{\s*opacity:\s*0;/);
-  assert.match(css, /\.cart-count\s*{[\s\S]*background:\s*#fff;[\s\S]*text-align:\s*center;/);
-  assert.match(css, /\.cart-count\s*{[\s\S]*border:\s*0;/);
-  assert.doesNotMatch(html, /dock-fill-mask/);
-  assert.match(js, /dockPrimary\.style\.setProperty\("--dock-button-width", `\$\{dockWidth\}px`\)/);
-  assert.match(js, /sizePillShape\(dockOutlineShape, dockWidth, dockHeight, 0\.5\)/);
-  assert.match(js, /const countCenterX = cartCount\.offsetLeft \+ cartCount\.offsetWidth \/ 2/);
-  assert.match(js, /const countCenterY = cartCount\.offsetTop \+ cartCount\.offsetHeight \/ 2/);
-  assert.match(js, /selectionSurfaceMask,[\s\S]*countCenterX,[\s\S]*countCenterY,[\s\S]*countRadius/);
-  assert.match(js, /dockOutlineMask,[\s\S]*countCenterY \+ \(dockHeight - selectionHeight\) \/ 2,[\s\S]*hasCountGap \? countRadius : 0/);
-});
-
-test("the selection pill has balanced generous side padding", () => {
-  assert.match(css, /\.cart-toggle\s*{[\s\S]*padding-inline:\s*18px;/);
-  assert.match(css, /\.dock-add,\s*\.cart-toggle\s*{[\s\S]*height:\s*38px;/);
-  assert.match(html, /class="cart-toggle-slot">[\s\S]*class="cart-toggle"/);
-  assert.match(css, /\.cart-toggle-slot\s*{[\s\S]*position:\s*absolute;[\s\S]*inset:\s*0;[\s\S]*display:\s*grid;[\s\S]*place-items:\s*center;/);
-  assert.match(css, /\.cart-toggle\s*{[\s\S]*position:\s*relative;[\s\S]*transform:\s*scale\(0\.94\);/);
-  assert.doesNotMatch(css, /\.cart-toggle\s*{[^}]*translate:/);
-  assert.match(css, /\.shop-dock\.has-current-selection \.cart-toggle\s*{[\s\S]*transform:\s*scale\(1\);/);
-});
-
-test("adding to cart fills, confirms, and settles into the selection pill", () => {
-  assert.match(html, /selection-prefix">Added to/);
-  assert.match(html, /selection-text">Your selection/);
-  assert.match(css, /\.dock-add\s*{[\s\S]*overflow:\s*hidden;[\s\S]*contain:\s*paint;/);
-  assert.match(html, /class="dock-fill" aria-hidden="true"/);
-  assert.match(css, /\.dock-fill\s*{[\s\S]*overflow:\s*hidden;[\s\S]*border-radius:\s*inherit;[\s\S]*clip-path:\s*inset\(0 100% 0 0\);[\s\S]*transition:\s*none;/);
-  assert.match(html, /class="dock-fill-svg"[\s\S]*class="dock-fill-shape" fill="white"/);
-  assert.match(css, /\.shop-dock\.is-adding \.dock-fill\s*{\s*clip-path:\s*inset\(0\);\s*transition:\s*clip-path 1500ms cubic-bezier\(0\.7, 0, 0\.15, 1\)/);
-  assert.match(css, /\.shop-dock\.is-preparing-add \.dock-fill,[\s\S]*\.shop-dock\.is-confirming-add \.dock-fill\s*{\s*clip-path:\s*inset\(0\);/);
-  assert.match(css, /\.cart-toggle\s*{[\s\S]*background:\s*transparent;/);
-  assert.match(css, /\.shop-dock\.has-cart:not\(\.has-current-selection\) \.cart-toggle\s*{[\s\S]*width:\s*var\(--dock-button-width\) !important;/);
-  assert.match(css, /\.selection-prefix\s*{[\s\S]*max-width:\s*0;[\s\S]*transition:/);
-  assert.match(css, /\.shop-dock\.is-confirming-add \.selection-prefix\s*{[\s\S]*max-width:\s*72px;/);
-  assert.match(js, /addTimer = setTimeout\(resolve, 1500\)[\s\S]*Promise\.all\(\[[\s\S]*syncCartReservations\(nextCart\),[\s\S]*animationDelay/);
-  assert.match(js, /cart = nextCart;\s*reservations = nextReservations;[\s\S]*renderCart\(\);/);
-  assert.doesNotMatch(js, /setMorphOrigin\(dockAdd\.getBoundingClientRect\(\)\)/);
-  assert.match(js, /requestAnimationFrame\(\(\) => requestAnimationFrame\(\(\) => \{[\s\S]*classList\.add\("is-confirming-add"\)/);
-  assert.match(js, /cartToggle\.style\.width = `\$\{dockAdd\.getBoundingClientRect\(\)\.width\}px`/);
-  assert.match(js, /animateSelectionWidth\(selectionButtonWidth\(true\)\)/);
-  assert.match(css, /\.cart-toggle\s*{[\s\S]*transition:\s*width 420ms cubic-bezier\(0\.53, 0, 0\.12, 0\.99\)/);
-  assert.match(js, /shopDock\.classList\.remove\("is-confirming-add"\)[\s\S]*\}, 1400\)/);
-  assert.match(js, /if \(shopDock\.classList\.contains\("has-current-selection"\)\) \{\s*animateSelectionWidth\(selectionButtonWidth\(\)\);\s*\} else \{\s*syncDockControls\(\);/);
-  assert.match(js, /selectionText\.textContent = "your selection"[\s\S]*selectionText\.textContent = "Your selection"/);
-  assert.match(js, /new ResizeObserver\(syncDockControls\)\.observe\(cartToggle\)/);
-  assert.match(js, /new ResizeObserver\(syncDockControls\)\.observe\(dockAdd\)/);
-  assert.match(js, /if \(!hasCurrentSelection && selectionWidthAnimation\) \{\s*selectionWidthAnimation\.cancel\(\);\s*selectionWidthAnimation = undefined;/);
-  assert.match(js, /\["is-adding", "is-preparing-add", "is-confirming-add", "is-cart-open"\]/);
-  assert.match(js, /cartToggle\.animate\([\s\S]*duration:\s*420[\s\S]*cubic-bezier\(0\.53, 0, 0\.12, 0\.99\)/);
-});
-
-test("the pill morphs smoothly into the cart", () => {
-  assert.match(html, /class="dock-morph">[\s\S]*<aside id="cart"/);
-  assert.match(css, /width 520ms cubic-bezier\(0\.53, 0, 0\.12, 0\.99\)/);
-  assert.match(css, /height:\s*var\(--cart-height, 220px\)/);
-  assert.match(css, /\.shop-dock\.is-cart-open \.dock-morph\s*{[\s\S]*width:\s*100%;[\s\S]*height:\s*100%;/);
-  assert.match(css, /\.shop-dock\.is-cart-open \.dock-morph\s*{[\s\S]*opacity:\s*1;/);
-  assert.match(css, /\.dock-morph\s*{[\s\S]*border-radius:\s*var\(--morph-radius, 19px\)/);
-  assert.match(css, /\.dock-morph\s*{[\s\S]*overflow:\s*hidden;/);
-  assert.match(css, /\.shop-dock\.is-cart-open \.cart\s*{[\s\S]*opacity:\s*1;/);
-  assert.match(js, /function sizeCart\(\)/);
-  assert.match(js, /function syncMorphOrigin\(\)/);
-  assert.match(js, /"--morph-radius", `\$\{rect\.height \/ 2\}px`/);
-  assert.match(css, /transition-delay:\s*520ms, 0ms, 0ms/);
-  assert.match(css, /\.shop-dock\.is-cart-closing \.cart\s*{[\s\S]*opacity:\s*0;[\s\S]*transition-delay:\s*0ms, 0ms, 220ms;/);
-  assert.match(css, /\.shop-dock\.is-cart-closing \.dock-summary\s*{[\s\S]*opacity:\s*1;[\s\S]*transform:\s*scale\(1\);/);
-});
-
-test("the info control morphs into verified product drawings", () => {
-  assert.match(html, /class="info-toggle"[\s\S]*aria-controls="product-info"/);
-  assert.match(html, /id="product-info"[\s\S]*class="technical-image"/);
-  assert.match(html, /class="info-claim"[\s\S]*class="info-edition"/);
-  assert.match(css, /\.info-toggle\s*{[\s\S]*border:\s*1px solid #fff;[\s\S]*border-radius:\s*50%;/);
-  assert.match(css, /\.shop-dock\.is-info-open \.dock-morph\s*{[\s\S]*width:\s*100%;[\s\S]*height:\s*100%;/);
-  assert.match(css, /\.shop-dock\.is-info-open\s*{[\s\S]*width:\s*min\(calc\(100vw - 44px\), 480px\);[\s\S]*height:\s*min\(calc\(100dvh - 44px\), 350px\);/);
-  assert.match(css, /\.product-info\s*{[\s\S]*grid-template-areas:\s*"copy drawing"\s*"claim claim";/);
-  assert.match(css, /\.info-description\s*{[\s\S]*align-self:\s*end;[\s\S]*max-width:\s*17ch;/);
-  assert.match(css, /\.info-claim\s*{[\s\S]*height:\s*42px;[\s\S]*grid-area:\s*claim;/);
-  assert.match(css, /\.shop-dock\.is-cart-open\s*{[\s\S]*width:\s*min\(calc\(100vw - 44px\), 570px\);/);
-  assert.doesNotMatch(html, /dimension-height|dimension-width/);
-  assert.doesNotMatch(css, /\.dimension-height|\.dimension-width/);
-  assert.doesNotMatch(html, /technical-caption/);
-  assert.doesNotMatch(js, /Isometric line drawing · source STEP/);
-  assert.match(metadata, /"round-vase":\s*{[\s\S]*profile:\s*"4 × 90° quarter extrusions · Ø80 mm assembled"/);
-  assert.match(metadata, /"thorn-vase":\s*{[\s\S]*height:\s*"200 mm"/);
-  assert.match(js, /const technical = activeProduct\?\.technical/);
-  assert.match(js, /infoClaim\.addEventListener\("click", \(\) => closeInfo\(\(\) => dockAdd\.click\(\)\)\)/);
-  assert.match(js, /setMorphOrigin\(infoToggle\.getBoundingClientRect\(\)\)/);
-  assert.match(css, /\.shop-dock\.is-info-closing \.dock-summary\s*{[\s\S]*opacity:\s*1;[\s\S]*transform:\s*scale\(1\);/);
-  for (const type of ["120", "660", "490", "28"]) {
-    assert.equal(fs.existsSync(path.join(root, `website/assets/shop/technical/type-${type}.png`)), true);
-  }
-});
-
-test("checkout has balanced inset spacing and rounded corners", () => {
-  assert.match(css, /--cart-padding:\s*10px;/);
-  assert.match(css, /--checkout-radius:\s*3px;/);
-  assert.match(css, /\.cart\s*{[\s\S]*top:\s*var\(--cart-padding\);[\s\S]*bottom:\s*auto;[\s\S]*grid-template-rows:\s*minmax\(0, 1fr\) auto auto;/);
-  assert.match(css, /\.cart\s*{[\s\S]*padding:\s*20px;/);
-  assert.match(css, /\.checkout\s*{[\s\S]*align-self:\s*end;[\s\S]*border-radius:\s*var\(--checkout-radius\);/);
-  assert.match(css, /border-radius:\s*calc\(var\(--checkout-radius\) \+ var\(--cart-padding\)\)/);
-  assert.match(css, /\.checkout\s*{[\s\S]*height:\s*48px;[\s\S]*font-size:\s*15px;/);
-  assert.match(js, /const verticalPadding = parseFloat\(style\.paddingTop\) \+ parseFloat\(style\.paddingBottom\)/);
-  assert.match(js, /itemsHeight \+ checkoutButton\.offsetHeight \+ errorHeight[\s\S]*cartPanel\.offsetTop \* 2 \+ verticalPadding \+ 4/);
-  assert.match(js, /new ResizeObserver\(\(\) => \{\s*if \(shopDock\.classList\.contains\("is-cart-open"\)\) sizeCart\(\);\s*\}\)\.observe\(cartItems\)/);
-});
-
-test("cart rows align to checkout and vertically center prices", () => {
+test("cart rows align prices and keep reservation actions", () => {
   assert.match(css, /\.cart-item\s*{[\s\S]*padding:\s*16px 0;/);
   assert.match(css, /\.cart-item\s*{[\s\S]*gap:\s*5px 16px;/);
   assert.match(css, /\.cart-item:first-child\s*{\s*padding-top:\s*8px;/);
@@ -266,19 +165,15 @@ test("cart rows only expose removal, not quantity controls", () => {
 });
 
 test("removing the final cart item closes the cart", () => {
-  assert.match(js, /if \(!Object\.keys\(cart\)\.length && shopDock\.classList\.contains\("is-cart-open"\)\) \{[\s\S]*closeCart\(renderCart\);[\s\S]*return;/);
-  assert.match(js, /function closeCart\(onClosed\)[\s\S]*classList\.add\("is-cart-closing"\);\s*shopDock\.classList\.remove\("is-cart-open"\)/);
-  assert.match(js, /closeTimer = setTimeout\(\(\) => \{[\s\S]*cartBackdrop\.hidden = true;[\s\S]*\}, 520\)/);
-  assert.match(css, /\.shop-dock\.is-cart-closing \.dock-morph\s*{\s*opacity:\s*1;/);
-});
-
-test("clicking outside uses the animated cart close", () => {
-  assert.match(js, /cartBackdrop\.addEventListener\("click", \(\) => closeCart\(\)\)/);
+  assert.match(js, /if \(!Object\.keys\(cart\)\.length && cartPanel\.classList\.contains\("is-open"\)\) \{[\s\S]*closeCart\(renderCart\);[\s\S]*return;/);
+  assert.match(js, /function closeCart\(onClosed\)[\s\S]*classList\.add\("is-cart-closing"\);/);
+  assert.match(js, /closeTimer = setTimeout\(\(\) => \{[\s\S]*cartBackdrop\.hidden = true;[\s\S]*\}, 420\)/);
 });
 
 test("the shop displays the lowest available product serial number", () => {
-  assert.match(js, /const serialNumber = activeProduct\.serialNumbers\?\.\[selected\]/);
-  assert.match(js, /`N° \$\{serialNumber\} of \$\{activeProduct\.editionSize\}`/);
+  assert.match(js, /const selected = cart\[product\.id\] \|\| 0;/);
+  assert.match(js, /return product\.serialNumbers\?\.\[selected\];/);
+  assert.match(js, /`N° \$\{serialNumber\} of \$\{product\.editionSize\}`/);
 });
 
 test("cart rows show a minimal live reservation timer beside remove", () => {
@@ -295,9 +190,8 @@ test("cart rows show a minimal live reservation timer beside remove", () => {
   assert.match(css, /\.cart-item\.is-expired \.remove\s*{\s*color:\s*#000;\s*opacity:\s*1;\s*filter:\s*none;/);
 });
 
-test("modal buttons darken subtly on hover", () => {
-  assert.match(css, /@media \(hover: hover\)[\s\S]*\.dock-add:hover\s*{\s*background-color:\s*rgba\(0, 0, 0, 0\.1\)/);
-  assert.match(css, /\.cart-toggle:hover,[\s\S]*\.checkout:hover\s*{\s*filter:\s*brightness\(0\.9\)/);
+test("drawer buttons darken subtly on hover", () => {
+  assert.match(css, /@media \(hover: hover\)[\s\S]*\.checkout:hover,[\s\S]*\.info-claim:not\(:disabled\):hover\s*{[\s\S]*filter:\s*brightness\(0\.9\)/);
 });
 
 test("product imagery uses understated horizontal galleries", () => {
@@ -350,7 +244,6 @@ test("shop galleries keep intrinsic photo ratios and reuse launch progressive up
   assert.match(js, /"\/assets\/shop\/490-vase-01\.jpg": \[1080, 1920\]/);
   assert.match(js, /"\/assets\/shop\/490-vase-02\.jpg": \[1080, 1920\]/);
   assert.doesNotMatch(js, /test: \/\\\/assets\\\/shop/);
-  assert.match(js, /containsCenter \? viewportHeight : 0\) \+ visible/);
   assert.match(js, /function syncGalleryHeight/);
   assert.match(js, /gallery\.style\.height = `\$\{height\}px`/);
   assert.match(js, /width \* intrinsicHeight \/ intrinsicWidth/);
@@ -358,11 +251,10 @@ test("shop galleries keep intrinsic photo ratios and reuse launch progressive up
 });
 
 test("the intro reuses the landing-page explore callout", () => {
-  assert.match(html, /class="explore" href="#products">Explore more below<\/a>/);
+  assert.match(html, /class="explore" href="#editions">Explore more below<\/a>/);
   assert.match(css, /\.explore\s*{[\s\S]*position:\s*fixed;[\s\S]*bottom:\s*clamp\(32px, 4svh, 42px\)/);
   assert.match(js, /const progress = Math\.max\(0, Math\.min\(1, window\.scrollY \/ introHandoffDistance\)\)/);
   assert.match(js, /explore\.style\.opacity = 1 - progress/);
-  assert.doesNotMatch(js, /--first-gallery-controls-opacity/);
 });
 
 test("explore callouts share a subtle motion-safe shimmer", () => {
@@ -374,7 +266,13 @@ test("explore callouts share a subtle motion-safe shimmer", () => {
 });
 
 test("the desktop collection heading uses the requested light weight", () => {
-  assert.match(css, /@media \(min-width: 801px\)\s*{[\s\S]*\.shop-intro h1\s*{\s*font-weight:\s*200;/);
+  assert.match(css, /@media \(min-width: 801px\)\s*{[\s\S]*\.shop-intro h1\s*{[\s\S]*font-weight:\s*200;/);
+});
+
+test("the editorial grid collapses to one column on small screens", () => {
+  assert.match(css, /@media \(max-width: 800px\)\s*{[\s\S]*\.product-grid\s*{[\s\S]*grid-template-columns:\s*1fr;/);
+  assert.match(css, /@media \(max-width: 800px\)\s*{[\s\S]*\.cart,[\s\S]*\.product-info\s*{[\s\S]*width:\s*100vw;/);
+  assert.match(css, /env\(safe-area-inset-bottom\)/);
 });
 
 test("admin login and dashboard honor hidden state", () => {
