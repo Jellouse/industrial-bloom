@@ -1,6 +1,6 @@
 # Industrial Bloom project handbook
 
-Last reviewed: 2026-08-27
+Last reviewed: 2026-09-06
 
 This is the first file future agents and collaborators should read. It describes the brand, product system, website, commerce backend, operations, and deployment workflow. Keep it current whenever architecture or operating procedures change.
 
@@ -33,10 +33,10 @@ The shop is intentionally custom. Do not introduce a template storefront or larg
 - Logo: the circular Industrial Bloom mark. On image areas it uses difference blending.
 - Expanded white panels use one restrained shadow token; transparent controls rely on the shared radial scrim.
 - Motion: smooth and deliberate. Avoid permanent JavaScript animation loops. Pause media when fully off screen and respect reduced motion.
-- Shop imagery: full-viewport vertical product sections with horizontal galleries and no gaps between products.
-- Shop controls: a bottom-anchored floating claim/cart control. Product information opens as a compact two-column card with its claim action across the bottom. A body-level radial scrim uses a `100lvh` canvas extended below the viewport so Safari chrome cannot reveal its boundary.
-- Intro transition: “Explore more below” fades over the first 120px of scroll. The floating claim/cart control uses the same handoff progress but remains transparent until its entire box has cleared the white intro.
-- Header: only the animated/difference-blended logo; no top cart button.
+- Shop imagery: large, native-aspect product photographs in an editorial grid (featured first edition, then two columns). Horizontal galleries stay understated: swipe/keyboard only, no arrows or dots.
+- Shop controls: each card shows price plus Add and Choose. Choose opens a side panel with gallery, copy, edition, and the technical drawing. Add reserves a serial and updates the header Selection count. A series/pack block can add one available edition of each type.
+- Intro transition: “Explore more below” fades over the first 120px of scroll.
+- Header: wordmark plus sparse links and a Selection trigger. Motion stays restrained (loader, hover logo turn, drawer slide). Respect reduced motion.
 - Mobile Safari is a priority. Avoid fragile viewport hacks and fixed bottom UI behind browser controls.
 
 ## 4. Products
@@ -108,15 +108,13 @@ Important API routes:
 
 ## 7. Storefront logic
 
-`website/shop/shop.js` loads `/api/shop/products`, builds each vertical product gallery, tracks the product crossing the viewport center, and updates the fixed claim control instantly between products. Galleries use an explicit index and horizontal transforms for swipe, drag, and keyboard navigation. After a multi-image product rests at viewport center for 2.4 seconds, its first image gives one subtle horizontal peek and returns; interaction cancels the hint, and reduced-motion users never receive it.
+`website/shop/shop.js` loads `/api/shop/products` and builds an editorial product grid: Type 660 is featured full-width, then Type 120, 490, and 28 sit in a two-column shop. Each card renders the API gallery, name, description, live price, next serial (`N° x of y`), and Add / Choose. Galleries use an explicit index and horizontal transforms for swipe, drag, and keyboard navigation. After a multi-image product is in view for 2.4 seconds, its first image gives one subtle horizontal peek and returns; interaction cancels the hint, and reduced-motion users never receive it. The homepage (`/`) uses the same paper, type, and header language, with a framed launch video used only as a featured Type 660 still-motion well — not a full-viewport cinematic hero.
 
 On the first website entry of a browsing session, the teaser or shop opens with a short logo loader after its content and fonts are ready. The actual fixed-header logo starts centered, spins slowly, decelerates to exactly 90 degrees, and rises with the mask into its normal position without swapping elements. Both pages share one session flag, so later navigation skips the loader without a flash. The loader includes a reduced-motion fallback and a timeout that prevents stalled loading from trapping the page.
 
-The cart is stored in `localStorage` as product quantities and paired with an opaque visitor ID. Malformed or unavailable browser storage falls back safely instead of stopping the shop. Every cart change synchronizes a 15-minute server-side reservation in `shop_cart_reservations`. The cart displays the exact held serials and a live countdown. Expired rows remain grayed out with “Reserve again” and “Remove” in black; checkout stays disabled until each row is renewed or removed. Public catalog responses exclude unexpired serials held by other visitors, while retaining the current visitor’s own serials. For an unselected product, the claim pill shows the lowest available serial.
+The cart is stored in `localStorage` as product quantities and paired with an opaque visitor ID. Malformed or unavailable browser storage falls back safely instead of stopping the shop. Every cart change synchronizes a 15-minute server-side reservation in `shop_cart_reservations`. The cart displays the exact held serials and a live countdown. Expired rows remain grayed out with “Reserve again” and “Remove” in black; checkout stays disabled until each row is renewed or removed. Public catalog responses exclude unexpired serials held by other visitors, while retaining the current visitor’s own serials. For an unselected product, the card and detail panel show the lowest available serial.
 
-The cart pill morphs into the cart panel using CSS dimensions measured by `syncMorphOrigin()`. The control is fixed to a safe-area-aware bottom anchor, so expanded cart and information panels grow upward without relying on Safari's inconsistent `visualViewport` measurements. Its count badge shares measured SVG cutouts with both the outlined Claim button and filled selection pill, preserving a true transparent gap over changing imagery. Cart contents fade in only after the morph completes; closing fades contents out before reversing the morph. Preserve the existing easing `cubic-bezier(0.53, 0, 0.12, 0.99)` unless the design direction changes.
-
-The outlined `+` beside the claim pill opens the same morph surface as a product-information panel. Both panels are semantic modal dialogs with keyboard focus trapping, Escape handling, and focus restoration. `lib/shop/product-metadata.js` is the single code-owned source for verified height, profile dimensions, and technical drawing paths. Types 120, 660, and 28 use their STEP geometry; Type 490 combines all four 90-degree STL quarters into the Ø80 mm assembly. The drawings live in `website/assets/shop/technical/` and use pure white faces/backgrounds with black linework. Dimension geometry shares the vase perspective while labels remain viewer-facing.
+The header Selection control opens a right-hand cart drawer. Choose opens a matching product-information drawer. Both panels are semantic modal dialogs with keyboard focus trapping, Escape handling, and focus restoration. They slide with `cubic-bezier(0.53, 0, 0.12, 0.99)` and honor reduced motion. `lib/shop/product-metadata.js` is the single code-owned source for verified height, profile dimensions, and technical drawing paths. Types 120, 660, and 28 use their STEP geometry; Type 490 combines all four 90-degree STL quarters into the Ø80 mm assembly. The drawings live in `website/assets/shop/technical/` and use pure white faces/backgrounds with black linework. Dimension geometry shares the vase perspective while labels remain viewer-facing.
 
 The public shop footer links Impressum, Widerruf, Versand, and Datenschutz. It does not link `/shop/admin/`. Admin remains reachable by URL for the operator.
 

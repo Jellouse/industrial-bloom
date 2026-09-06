@@ -17,32 +17,15 @@
         document.documentElement.classList.add("is-loading");
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=23">
+    <link rel="stylesheet" href="styles.css?v=30">
   </head>
   <body>
     <div class="site-loader" aria-hidden="true">
       <div class="loader-mask"></div>
     </div>
 
-    <main class="hero">
-      <div class="thorn-frame" aria-hidden="true">
-        <video
-          class="thorn"
-          muted
-          autoplay
-          loop
-          playsinline
-          preload="metadata"
-          poster="assets/video/render-7-base-11-poster.jpg"
-          width="1598"
-          height="1710"
-        >
-          <source src="assets/video/render-7-base-11-958.mp4" type="video/mp4" media="(max-width: 720px)">
-          <source src="assets/video/render-7-base-11-1598.mp4" type="video/mp4">
-        </video>
-      </div>
-
-      <div class="logo-anchor">
+    <header class="site-header">
+      <a class="logo-anchor" href="./" aria-label="Industrial Bloom home">
         <img
           class="logo"
           src="assets/logo.png"
@@ -51,120 +34,162 @@
           alt="Industrial Bloom"
           decoding="async"
         >
-      </div>
+        <span class="wordmark">Industrial Bloom</span>
+      </a>
+      <nav class="header-nav" aria-label="Site">
+        <a class="shop-link" href="shop/">Shop</a>
+        <a href="#newsletter">Newsletter</a>
+      </nav>
+    </header>
 
-      <div class="hero-copy">
-        <section class="intro" aria-labelledby="title">
-          <h1 id="title">Industrial Bloom</h1>
-          <p class="tagline">A series of vases accentuating the contrast between nature and industry.</p>
-        </section>
-
-        <form class="signup signup-header" novalidate>
-          <label class="sr-only" for="email">Email</label>
-          <input id="email" name="email" type="email" placeholder="Email" required>
-          <button type="submit">Sign up</button>
-        </form>
+    <main>
+      <section class="masthead">
+        <p class="eyebrow">Objects for living things</p>
+        <h1 id="title">Industrial Bloom</h1>
+        <p class="tagline">A series of aluminium extrusion vases accentuating the contrast between nature and industry.</p>
         <p class="launch-note"><a href="shop/">The shop is open</a></p>
-      </div>
-
-      <div class="invert-circle" aria-hidden="true"></div>
-      <a class="shop-link" href="shop/">Shop</a>
-      <a class="explore" href="#below">Explore more below</a>
-    </main>
-
-    <section id="below" class="thorn-continuation" aria-hidden="true"></section>
-
-    <section class="visuals">
-      <figure class="visual-image is-loading">
-        <img
-          src="assets/responsive/render-6-640.png"
-          data-webp-srcset="assets/responsive/render-6-640.webp 398w, assets/responsive/render-6-1280.webp 796w, assets/responsive/render-6-1920.webp 1195w, assets/responsive/render-6-full.webp 3088w"
-          data-srcset="assets/responsive/render-6-640.png 398w, assets/responsive/render-6-1280.png 796w, assets/responsive/render-6-1920.png 1195w"
-          width="3088"
-          height="4962"
-          alt=""
-          loading="lazy"
-          decoding="async"
-        >
-      </figure>
-
-      <section class="body-copy">
-        <p>Simple forms and textures that make any plant silhouette even more striking.</p>
       </section>
 
-      <figure class="visual-image is-loading">
-        <img
-          src="assets/responsive/render-3-900.png"
-          data-webp-srcset="assets/responsive/render-3-900.webp 603w, assets/responsive/render-3-1600.webp 1071w, assets/responsive/render-3-full.webp 2334w"
-          data-srcset="assets/responsive/render-3-900.png 603w, assets/responsive/render-3-1600.png 1071w"
-          width="2334"
-          height="3486"
-          alt=""
-          loading="lazy"
-          decoding="async"
-        >
-      </figure>
-
-      <figure class="visual-image is-loading">
-        <img
-          src="assets/responsive/round-vase-900.png"
-          data-webp-srcset="assets/responsive/round-vase-900.webp 759w, assets/responsive/round-vase-1600.webp 1349w, assets/responsive/round-vase-full.webp 1517w"
-          data-srcset="assets/responsive/round-vase-900.png 759w, assets/responsive/round-vase-1600.png 1349w"
-          width="1517"
-          height="1799"
-          alt=""
-          loading="lazy"
-          decoding="async"
-        >
-      </figure>
-
-      <section class="body-copy">
-        <p>Designed to pay homage to every type of plant or flower.</p>
+      <section class="featured" aria-labelledby="featured-title">
+        <figure class="featured-media">
+          <video
+            class="thorn"
+            muted
+            autoplay
+            loop
+            playsinline
+            preload="metadata"
+            poster="assets/video/render-7-base-11-poster.jpg"
+            width="1598"
+            height="1710"
+          >
+            <source src="assets/video/render-7-base-11-958.mp4" type="video/mp4" media="(max-width: 720px)">
+            <source src="assets/video/render-7-base-11-1598.mp4" type="video/mp4">
+          </video>
+        </figure>
+        <div class="featured-copy">
+          <p class="product-kicker">Type</p>
+          <h2 id="featured-title">660</h2>
+          <p>The most open edition. A tall industrial form made to sharpen delicate silhouettes.</p>
+          <p class="product-price">€70</p>
+          <a class="text-cta" href="shop/#editions">Choose</a>
+        </div>
       </section>
 
-      <figure class="visual-image is-loading">
-        <img
-          src="assets/responsive/render-9-640.png"
-          data-webp-srcset="assets/responsive/render-9-640.webp 479w, assets/responsive/render-9-1280.webp 958w, assets/responsive/render-9-1920.webp 1438w, assets/responsive/render-9-full.webp 2500w"
-          data-srcset="assets/responsive/render-9-640.png 479w, assets/responsive/render-9-1280.png 958w, assets/responsive/render-9-1920.png 1438w"
-          width="2500"
-          height="3338"
-          alt=""
-          loading="lazy"
-          decoding="async"
-        >
-      </figure>
+      <a class="explore" href="#editions">Explore more below</a>
 
-      <section class="bottom-signup" aria-labelledby="bottom-title">
-        <h2 id="bottom-title">You’ve scrolled all the way. Time to sign up.</h2>
+      <section id="editions" class="home-grid">
+        <article class="home-card">
+          <figure class="visual-image is-loading">
+            <img
+              src="assets/responsive/render-6-640.png"
+              data-webp-srcset="assets/responsive/render-6-640.webp 398w, assets/responsive/render-6-1280.webp 796w, assets/responsive/render-6-1920.webp 1195w, assets/responsive/render-6-full.webp 3088w"
+              data-srcset="assets/responsive/render-6-640.png 398w, assets/responsive/render-6-1280.png 796w, assets/responsive/render-6-1920.png 1195w"
+              width="3088"
+              height="4962"
+              alt="Type 660"
+              loading="lazy"
+              decoding="async"
+            >
+          </figure>
+          <h2>660</h2>
+          <p>A tall industrial form.</p>
+          <p class="product-price">€70</p>
+          <a href="shop/">Add / Choose</a>
+        </article>
+        <article class="home-card">
+          <figure class="visual-image is-loading">
+            <img
+              src="assets/responsive/render-3-900.png"
+              data-webp-srcset="assets/responsive/render-3-900.webp 603w, assets/responsive/render-3-1600.webp 1071w, assets/responsive/render-3-full.webp 2334w"
+              data-srcset="assets/responsive/render-3-900.png 603w, assets/responsive/render-3-1600.png 1071w"
+              width="2334"
+              height="3486"
+              alt="Type 120"
+              loading="lazy"
+              decoding="async"
+            >
+          </figure>
+          <h2>120</h2>
+          <p>A restrained vertical vessel.</p>
+          <p class="product-price">€150</p>
+          <a href="shop/">Add / Choose</a>
+        </article>
+        <article class="home-card">
+          <figure class="visual-image is-loading">
+            <img
+              src="assets/responsive/round-vase-900.png"
+              data-webp-srcset="assets/responsive/round-vase-900.webp 759w, assets/responsive/round-vase-1600.webp 1349w, assets/responsive/round-vase-full.webp 1517w"
+              data-srcset="assets/responsive/round-vase-900.png 759w, assets/responsive/round-vase-1600.png 1349w"
+              width="1517"
+              height="1799"
+              alt="Type 490"
+              loading="lazy"
+              decoding="async"
+            >
+          </figure>
+          <h2>490</h2>
+          <p>A low, weighty volume.</p>
+          <p class="product-price">€250</p>
+          <a href="shop/">Add / Choose</a>
+        </article>
+        <article class="home-card">
+          <figure class="visual-image is-loading">
+            <img
+              src="assets/shop/technical/type-28.png"
+              width="1600"
+              height="1600"
+              alt="Type 28"
+              loading="lazy"
+              decoding="async"
+            >
+          </figure>
+          <h2>28</h2>
+          <p>A small tube for a single flower.</p>
+          <p class="product-price">€55</p>
+          <a href="shop/">Add / Choose</a>
+        </article>
+      </section>
+
+      <section class="home-series">
+        <p class="eyebrow">The series</p>
+        <h2>Four types. One material.</h2>
+        <p>Numbered aluminium vessels from Humansize. Claim editions in the shop.</p>
+        <a class="text-cta" href="shop/#series">Choose the series</a>
+      </section>
+
+      <section id="newsletter" class="bottom-signup" aria-labelledby="bottom-title">
+        <h2 id="bottom-title">Workshop notes</h2>
+        <p>You’ve scrolled all the way. Time to sign up.</p>
         <form class="signup signup-bottom" novalidate>
           <label class="sr-only" for="bottom-email">Email</label>
           <input id="bottom-email" name="email" type="email" placeholder="Email" required>
           <button type="submit">Sign up</button>
         </form>
         <p class="launch-note launch-note-bottom"><a href="shop/">The shop is open</a></p>
-        <div class="invert-circle" aria-hidden="true"></div>
-        <footer>
-          <span>Part of Humansize CORP.</span>
-          <span class="corp-id">672-395-863</span>
-        </footer>
       </section>
-    </section>
+    </main>
 
-    <nav class="site-legal" aria-label="Legal">
-      <a href="shop/">Shop</a>
-      <a href="impressum/">Impressum</a>
-      <a href="widerruf/">Widerruf</a>
-      <a href="versand/">Versand</a>
-      <a href="datenschutz/">Datenschutz</a>
-    </nav>
+    <footer class="site-footer">
+      <div>
+        <span>Part of Humansize CORP.</span>
+        <span class="corp-id">672-395-863</span>
+        <p class="shipping-note">Tracked EU shipping €12 · 3–7 working days. No shipping to the UK, US, or Japan.</p>
+      </div>
+      <nav class="site-legal" aria-label="Legal">
+        <a href="shop/">Shop</a>
+        <a href="impressum/">Impressum</a>
+        <a href="widerruf/">Widerruf</a>
+        <a href="versand/">Versand</a>
+        <a href="datenschutz/">Datenschutz</a>
+      </nav>
+    </footer>
 
     <script>
       const logo = document.querySelector(".logo");
       const explore = document.querySelector(".explore");
       const forms = document.querySelectorAll(".signup");
       const bodyCopy = document.querySelector(".tagline");
-      const thornFrame = document.querySelector(".thorn-frame");
       const thornVideo = document.querySelector(".thorn");
       const progressiveImages = document.querySelectorAll(".visual-image img");
       const supportsWebp = document.createElement("canvas").toDataURL("image/webp").startsWith("data:image/webp");
@@ -173,15 +198,9 @@
       const loaderSpinDuration = 4800;
       const shouldRunPageLoader = document.documentElement.classList.contains("is-loading");
       let logoRotation = shouldRunPageLoader ? 0 : 90;
-      let lastScrollY = window.scrollY;
-      let snapTimer;
-      let snapFrame;
       let loaderSpinAnimation;
       let loaderSettleAnimation;
       let loaderQueued = false;
-      let thornScale = 1;
-      let thornTargetScale = 1;
-      let thornScaleFrame;
 
       function renderLogoRotation() {
         logo.style.transform = `rotate(${logoRotation}deg)`;
@@ -251,104 +270,58 @@
       if (shouldRunPageLoader) setTimeout(finishPageLoader, 4000);
       finishPageLoader();
 
-      function setLogoRotation(rotation) {
-        cancelAnimationFrame(snapFrame);
-        logoRotation = rotation;
-        renderLogoRotation();
-      }
-
       function animateLogoTo(targetRotation) {
-        cancelAnimationFrame(snapFrame);
-        const startRotation = logoRotation;
-        const startTime = performance.now();
-        const duration = 650;
-
-        function frame(now) {
-          const progress = Math.min(1, (now - startTime) / duration);
-          const eased = 1 - Math.pow(1 - progress, 3);
-
-          logoRotation = startRotation + (targetRotation - startRotation) * eased;
+        if (!logo.animate || prefersReducedMotion) {
+          logoRotation = targetRotation;
           renderLogoRotation();
-
-          if (progress < 1) {
-            snapFrame = requestAnimationFrame(frame);
-          } else {
-            logoRotation = targetRotation;
-            renderLogoRotation();
-          }
+          return;
         }
-
-        snapFrame = requestAnimationFrame(frame);
-      }
-
-      function snapLogo() {
-        animateLogoTo(Math.round(logoRotation / 90) * 90);
+        logo.animate(
+          [
+            { transform: `rotate(${logoRotation}deg)` },
+            { transform: `rotate(${targetRotation}deg)` },
+          ],
+          { duration: 650, easing: "cubic-bezier(0.22, 0.61, 0.36, 1)", fill: "forwards" },
+        );
+        logoRotation = targetRotation;
       }
 
       logo.addEventListener("mouseenter", () => {
         animateLogoTo(logoRotation + 90);
       });
 
-      function allowManualVideoPlay() {
-        thornFrame.classList.add("needs-manual-play");
-      }
-
       function playThornVideo() {
-        thornVideo.play().catch(allowManualVideoPlay);
+        thornVideo?.play().catch(() => {});
       }
 
       playThornVideo();
 
-      setTimeout(() => {
-        if (thornVideo.paused) allowManualVideoPlay();
-      }, 600);
-
-      thornVideo.addEventListener("play", () => {
-        thornFrame.classList.remove("needs-manual-play");
-      });
-
-      if ("IntersectionObserver" in window) {
+      if (thornVideo && "IntersectionObserver" in window) {
         const videoObserver = new IntersectionObserver(([entry]) => {
-          if (entry.isIntersecting) {
-            playThornVideo();
-          } else {
-            thornVideo.pause();
-          }
+          if (entry.isIntersecting) playThornVideo();
+          else thornVideo.pause();
         });
-
         videoObserver.observe(thornVideo);
       }
 
       function showSignupSuccess(form) {
-        const section = form.closest(".hero, .bottom-signup");
+        const section = form.closest(".bottom-signup, .masthead") || form.parentElement;
         section.classList.add("is-submitted");
-        section.classList.add("is-inverted");
-
-        setTimeout(() => {
-          section.classList.remove("is-inverted");
-        }, 3000);
-
-        if (section.classList.contains("hero")) {
-          setTimeout(() => {
-            section.querySelector("h1").textContent = "Thank you";
-            bodyCopy.textContent = "We will be in touch.";
-          }, 320);
-        } else {
-          section.querySelector("h2").textContent = "We will be in touch.";
-        }
+        const heading = section.querySelector("h2, h1");
+        if (heading) heading.textContent = "Thank you";
+        const copy = section.querySelector("p:not(.launch-note)");
+        if (copy) copy.textContent = "We will be in touch.";
       }
 
       function typeNote(form, message) {
-        const section = form.closest(".hero, .bottom-signup");
-        const note = section.querySelector(".launch-note");
+        const note = form.parentElement.querySelector(".launch-note");
+        if (!note) return;
         clearInterval(note.typeTimer);
         note.textContent = "";
-
         let index = 0;
         note.typeTimer = setInterval(() => {
           note.textContent = message.slice(0, index + 1);
           index += 1;
-
           if (index >= message.length) clearInterval(note.typeTimer);
         }, 26);
       }
@@ -377,7 +350,6 @@
           });
 
           if (!response.ok) throw new Error("Could not subscribe. Try again.");
-
           showSignupSuccess(form);
         } catch (error) {
           button.disabled = false;
@@ -392,68 +364,33 @@
           event.preventDefault();
           handleSignup(form);
         });
-
-        form.querySelector("button").addEventListener("click", (event) => {
-          event.preventDefault();
-          handleSignup(form);
-        });
       });
 
       function fadeExplore() {
+        if (!explore) return;
         const opacity = Math.max(0, 1 - window.scrollY / 140);
         explore.style.opacity = opacity;
         explore.style.pointerEvents = opacity > 0.15 ? "auto" : "none";
       }
 
-      function scaleThorn() {
-        const progress = Math.min(1, window.scrollY / window.innerHeight);
-        thornTargetScale = 1 - progress * 0.1;
-
-        if (!thornScaleFrame) {
-          thornScaleFrame = requestAnimationFrame(renderThornScale);
-        }
-      }
-
-      function renderThornScale() {
-        thornScale += (thornTargetScale - thornScale) * 0.12;
-        document.documentElement.style.setProperty("--thorn-scale", thornScale);
-
-        if (Math.abs(thornTargetScale - thornScale) < 0.0001) {
-          thornScale = thornTargetScale;
-          document.documentElement.style.setProperty("--thorn-scale", thornScale);
-          thornScaleFrame = undefined;
-          return;
-        }
-
-        thornScaleFrame = requestAnimationFrame(renderThornScale);
-      }
-
       fadeExplore();
-      scaleThorn();
 
       progressiveImages.forEach((image) => {
         const wrapper = image.closest(".visual-image");
-
-        image.addEventListener("load", () => {
-          wrapper.classList.remove("is-loading");
-        });
-
-        if (image.complete) {
-          wrapper.classList.remove("is-loading");
-        }
+        image.addEventListener("load", () => wrapper.classList.remove("is-loading"));
+        if (image.complete) wrapper.classList.remove("is-loading");
       });
 
       function upgradeImage(image) {
         const srcset = supportsWebp ? image.dataset.webpSrcset : image.dataset.srcset;
+        if (!srcset) return;
         const candidates = srcset.split(",").map((entry) => {
           const [src, width] = entry.trim().split(/\s+/);
           return { src, width: Number(width.replace("w", "")) };
         });
         const neededWidth = Math.ceil(image.getBoundingClientRect().width * window.devicePixelRatio);
         const target = candidates.find((candidate) => candidate.width >= neededWidth) || candidates.at(-1);
-
         if (image.dataset.loadedSrc === target.src) return;
-
         image.closest(".visual-image").classList.add("is-loading");
         image.dataset.loadedSrc = target.src;
         image.dataset.upgraded = "true";
@@ -468,7 +405,6 @@
             imageObserver.unobserve(entry.target);
           });
         }, { rootMargin: "800px 0px" });
-
         progressiveImages.forEach((image) => imageObserver.observe(image));
       } else {
         progressiveImages.forEach(upgradeImage);
@@ -480,17 +416,7 @@
         });
       });
 
-      window.addEventListener("scroll", () => {
-        const scrollDelta = window.scrollY - lastScrollY;
-        lastScrollY = window.scrollY;
-
-        fadeExplore();
-        scaleThorn();
-        setLogoRotation(logoRotation + scrollDelta * 0.18);
-
-        clearTimeout(snapTimer);
-        snapTimer = setTimeout(snapLogo, 260);
-      }, { passive: true });
+      window.addEventListener("scroll", fadeExplore, { passive: true });
     </script>
     <script>
       window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
