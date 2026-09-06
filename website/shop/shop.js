@@ -296,7 +296,7 @@ function element(tag, className, text) {
 }
 
 function displayName(product) {
-  return String(product?.name || "").replace(/ vase$/i, "");
+  return String(product?.name || "").replace(/^type\s+/i, "").replace(/ vase$/i, "");
 }
 
 function nextSerial(product) {
@@ -754,12 +754,12 @@ function closeCart(onClosed) {
   cartPanel.classList.remove("is-open", "is-cart-open");
   cartPanel.setAttribute("aria-hidden", "true");
   cartToggle.setAttribute("aria-expanded", "false");
+  if (!infoPanel.classList.contains("is-open")) {
+    cartBackdrop.hidden = true;
+    document.body.classList.remove("is-panel-open");
+  }
   closeTimer = setTimeout(() => {
     cartPanel.classList.remove("is-cart-closing");
-    if (!infoPanel.classList.contains("is-open")) {
-      cartBackdrop.hidden = true;
-      document.body.classList.remove("is-panel-open");
-    }
     closeTimer = undefined;
     if (typeof onClosed === "function") onClosed();
     restoreDialogFocus(focusTarget);
@@ -773,12 +773,12 @@ function closeInfo(onClosed) {
   infoPanel.classList.add("is-info-closing");
   infoPanel.classList.remove("is-open", "is-info-open");
   infoPanel.setAttribute("aria-hidden", "true");
+  if (!cartPanel.classList.contains("is-open")) {
+    cartBackdrop.hidden = true;
+    document.body.classList.remove("is-panel-open");
+  }
   closeTimer = setTimeout(() => {
     infoPanel.classList.remove("is-info-closing");
-    if (!cartPanel.classList.contains("is-open")) {
-      cartBackdrop.hidden = true;
-      document.body.classList.remove("is-panel-open");
-    }
     closeTimer = undefined;
     if (typeof onClosed === "function") onClosed();
     restoreDialogFocus(focusTarget);

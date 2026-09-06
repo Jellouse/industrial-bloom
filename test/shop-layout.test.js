@@ -42,6 +42,10 @@ test("the editorial shop uses a sparse header instead of a floating claim dock",
   assert.doesNotMatch(js, /visualViewport|syncVisualViewport|syncMorphOrigin|setMorphOrigin/);
 });
 
+test("live Type-prefixed catalog names do not double the Type kicker", () => {
+  assert.match(js, /replace\(\/\^type\\s\+\/i, ""\)/);
+});
+
 test("product cards expose price plus Add and Choose", () => {
   assert.match(js, /element\("article", index === 0 \? "product-card is-featured" : "product-card"\)/);
   assert.match(js, /element\("p", "product-price", money\(product\.priceCents/);
@@ -167,7 +171,8 @@ test("cart rows only expose removal, not quantity controls", () => {
 test("removing the final cart item closes the cart", () => {
   assert.match(js, /if \(!Object\.keys\(cart\)\.length && cartPanel\.classList\.contains\("is-open"\)\) \{[\s\S]*closeCart\(renderCart\);[\s\S]*return;/);
   assert.match(js, /function closeCart\(onClosed\)[\s\S]*classList\.add\("is-cart-closing"\);/);
-  assert.match(js, /closeTimer = setTimeout\(\(\) => \{[\s\S]*cartBackdrop\.hidden = true;[\s\S]*\}, 420\)/);
+  assert.match(js, /closeTimer = setTimeout\(\(\) => \{[\s\S]*\}, 420\)/);
+  assert.match(js, /cartBackdrop\.hidden = true;/);
 });
 
 test("the shop displays the lowest available product serial number", () => {
