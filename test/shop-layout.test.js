@@ -56,6 +56,19 @@ test("product cards expose price plus Add and Choose", () => {
   assert.match(js, /infoClaim\.addEventListener\("click", \(\) => closeInfo\(\(\) => addProduct\(activeProduct\)\)\)/);
 });
 
+test("editorial cards keep image, title, edition, then price with Add and Choose", () => {
+  assert.match(js, /const editionOrder = \["660", "120", "490", "28"\]/);
+  assert.match(js, /products = sortCatalog\(products\)/);
+  assert.match(js, /element\("p", "product-kicker", "Type"\)/);
+  assert.match(js, /element\("h2", "product-name", displayName\(product\)\)/);
+  assert.match(js, /element\("p", "product-edition", editionLabel\(product\)\)/);
+  assert.match(js, /element\("div", "product-footer"\)/);
+  assert.doesNotMatch(js, /element\("p", "product-description"/);
+  assert.match(css, /\.product-footer\s*{[\s\S]*justify-content:\s*space-between;/);
+  assert.match(js, /gallery-index/);
+  assert.match(css, /\.gallery-index\s*{[\s\S]*pointer-events:\s*none;/);
+});
+
 test("the series pack can add available editions or return to the grid", () => {
   assert.match(html, /id="series" class="collection"/);
   assert.match(html, /class="collection-add"[\s\S]*Add/);
@@ -63,6 +76,12 @@ test("the series pack can add available editions or return to the grid", () => {
   assert.match(js, /async function addSeries\(\)/);
   assert.match(js, /collectionChoose\.addEventListener\("click"/);
   assert.match(js, /getElementById\("editions"\)\?\.scrollIntoView/);
+  assert.match(html, /class="collection-media"/);
+  assert.match(html, /class="collection-types"/);
+  assert.match(html, /class="collection-price"/);
+  assert.match(js, /function renderCollectionMoment/);
+  assert.match(css, /\.collection-frame img\s*{[\s\S]*width:\s*100%;[\s\S]*height:\s*auto;/);
+  assert.doesNotMatch(css, /\.collection-frame img\s*{[^}]*object-fit:\s*cover/);
 });
 
 test("the shop newsletter posts to Brevo through the existing subscribe API", () => {

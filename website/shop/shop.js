@@ -160,7 +160,7 @@ function upgradeImage(image) {
 }
 
 function observeProgressiveImages() {
-  progressiveImages = [...document.querySelectorAll(".gallery-slide img[data-srcset], .gallery-slide img[data-webp-srcset]")];
+  progressiveImages = [...document.querySelectorAll(".gallery-slide img[data-srcset], .gallery-slide img[data-webp-srcset], .collection-frame img[data-srcset], .collection-frame img[data-webp-srcset]")];
 
   if ("IntersectionObserver" in window) {
     progressiveImageObserver?.disconnect();
@@ -296,7 +296,21 @@ function element(tag, className, text) {
 }
 
 function displayName(product) {
-  return String(product?.name || "").replace(/^type\s+/i, "").replace(/ vase$/i, "");
+  return String(product?.name || "").replace(/^type\s+/i, "").replace(/ vase$/i, "").trim();
+}
+
+const editionOrder = ["660", "120", "490", "28"];
+
+function typeCode(product) {
+  return String(product?.technical?.type || displayName(product)).trim();
+}
+
+function sortCatalog(list) {
+  return [...list].sort((left, right) => {
+    const leftIndex = editionOrder.indexOf(typeCode(left));
+    const rightIndex = editionOrder.indexOf(typeCode(right));
+    return (leftIndex === -1 ? 99 : leftIndex) - (rightIndex === -1 ? 99 : rightIndex);
+  });
 }
 
 function nextSerial(product) {
@@ -395,6 +409,9 @@ function createGallery(product) {
     return gallery;
   }
 
+  const indexLabel = element("p", "gallery-index", `1/${images.length}`);
+  gallery.append(indexLabel);
+
   gallery.tabIndex = 0;
   gallery.setAttribute("role", "region");
   gallery.setAttribute("aria-roledescription", "carousel");
@@ -407,6 +424,8 @@ function createGallery(product) {
     [...track.children].forEach((slide, slideIndex) => {
       slide.setAttribute("aria-hidden", String(slideIndex !== index));
     });
+    const indexLabel = gallery.querySelector(".gallery-index");
+    if (indexLabel) indexLabel.textContent = `${index + 1}/${images.length}`;
   }
 
   function showSlide(index) {
@@ -506,7 +525,51 @@ function renderEditionStates() {
   if (activeProduct) renderProductInfo();
 }
 
+function renderCollectionMoment() {
+  const media = document.querySelector(".collection-media");
+  const types = document.querySelector(".collection-types");
+  const seriesPrice = document.querySelector(".collection-price");
+  if (!media || !types) return;
+
+  media.replaceChildren();
+  types.replaceChildren();
+  let total = 0;
+  let currency = products[0]?.currency || "eur";
+
+  products.forEach((product) => {
+    const source = product.galleryImages?.[0] || product.imageUrl;
+    if (source) {
+      const frame = element("figure", "collection-frame");
+      const image = document.createElement("img");
+      applyGallerySource(image, source);
+      image.alt = displayName(product);
+      image.loading = "lazy";
+      image.decoding = "async";
+      frame.append(image);
+      media.append(frame);
+    }
+
+    const row = element("li", "collection-type");
+    row.append(element("span", "collection-type-name", typeCode(product)));
+    row.append(element("span", "collection-type-price", money(product.priceCents, product.currency)));
+    types.append(row);
+
+    if (nextSerial(product) !== undefined) {
+      total += product.priceCents;
+      currency = product.currency;
+    }
+  });
+
+  media.hidden = media.childElementCount === 0;
+  types.hidden = types.childElementCount === 0;
+  if (seriesPrice) {
+    seriesPrice.hidden = total <= 0;
+    seriesPrice.textContent = total ? money(total, currency) : "";
+  }
+}
+
 function renderProducts() {
+  products = sortCatalog(products);
   productGrid.replaceChildren();
   productGrid.setAttribute("aria-busy", "false");
   products.forEach((product, index) => {
@@ -515,9 +578,9 @@ function renderProducts() {
     const meta = element("div", "product-meta");
     meta.append(element("p", "product-kicker", "Type"));
     meta.append(element("h2", "product-name", displayName(product)));
-    meta.append(element("p", "product-description", product.description));
-    meta.append(element("p", "product-price", money(product.priceCents, product.currency)));
     meta.append(element("p", "product-edition", editionLabel(product)));
+    const footer = element("div", "product-footer");
+    footer.append(element("p", "product-price", money(product.priceCents, product.currency)));
     const actions = element("div", "product-actions");
     const add = element("button", "card-add", "Add");
     add.type = "button";
@@ -527,11 +590,13 @@ function renderProducts() {
     choose.type = "button";
     choose.addEventListener("click", () => openInfo(product));
     actions.append(add, choose);
-    meta.append(actions);
+    footer.append(actions);
+    meta.append(footer);
     card.append(createGallery(product), meta);
     productGrid.append(card);
   });
 
+  renderCollectionMoment();
   setActiveProduct(products[0]);
   observeProgressiveImages();
   requestAnimationFrame(syncAllGalleryHeights);
