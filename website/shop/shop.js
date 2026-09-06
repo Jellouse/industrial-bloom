@@ -43,7 +43,9 @@ let cart = readJson(localStorage, cartStorageKey, {});
 let reservations = readJson(localStorage, reservationStorageKey, {});
 let activeProduct;
 let addLock = false;
-let closeTimer;
+let checkoutLock = false;
+let cartCloseTimer;
+let infoCloseTimer;
 let loaderQueued = false;
 let loaderSpinAnimation;
 let loaderSettleAnimation;
@@ -686,12 +688,25 @@ function deactivateDialog(panel) {
 }
 
 function restoreDialogFocus(target) {
+  if (activeDialog) return;
   requestAnimationFrame(() => {
+    if (activeDialog) return;
     const next = target?.isConnected && !target.disabled && target.getClientRects().length
       ? target
       : cartToggle;
     next?.focus({ preventScroll: true });
   });
+}
+
+function setDialogOpen(panel, open) {
+  panel.setAttribute("aria-hidden", open ? "false" : "true");
+  panel.inert = !open;
+}
+
+function hideBackdropIfIdle() {
+  if (cartPanel.classList.contains("is-open") || infoPanel.classList.contains("is-open")) return;
+  cartBackdrop.hidden = true;
+  document.body.classList.remove("is-panel-open");
 }
 
 function handleDialogKeydown(event) {
@@ -720,69 +735,78 @@ function handleDialogKeydown(event) {
 }
 
 function openCart() {
-  clearTimeout(closeTimer);
-  closeTimer = undefined;
-  cartPanel.classList.add("is-open");
-  cartPanel.classList.add("is-cart-open");
+  if (infoPanel.classList.contains("is-open")) closeInfo();
+  clearTimeout(cartCloseTimer);
+  cartCloseTimer = undefined;
+  cartPanel.classList.remove("is-cart-closing");
+  cartPanel.classList.add("is-open", "is-cart-open");
   cartBackdrop.hidden = false;
-  cartPanel.setAttribute("aria-hidden", "false");
+  setDialogOpen(cartPanel, true);
   cartToggle.setAttribute("aria-expanded", "true");
   document.body.classList.add("is-panel-open");
   activateDialog(cartPanel, cartToggle);
 }
 
 function openInfo(product) {
+  if (cartPanel.classList.contains("is-open")) closeCart();
   setActiveProduct(product);
   infoMedia.replaceChildren(createGallery(product));
   observeProgressiveImages();
   requestAnimationFrame(syncAllGalleryHeights);
-  clearTimeout(closeTimer);
-  closeTimer = undefined;
-  infoPanel.classList.add("is-open");
-  infoPanel.classList.add("is-info-open");
+  clearTimeout(infoCloseTimer);
+  infoCloseTimer = undefined;
+  infoPanel.classList.remove("is-info-closing");
+  infoPanel.classList.add("is-open", "is-info-open");
   cartBackdrop.hidden = false;
-  infoPanel.setAttribute("aria-hidden", "false");
+  setDialogOpen(infoPanel, true);
   document.body.classList.add("is-panel-open");
   activateDialog(infoPanel, document.activeElement);
 }
 
 function closeCart(onClosed) {
-  if (!cartPanel.classList.contains("is-open")) return;
+  if (!cartPanel.classList.contains("is-open")) {
+    if (typeof onClosed === "function") onClosed();
+    return;
+  }
   const focusTarget = deactivateDialog(cartPanel);
-  clearTimeout(closeTimer);
+  clearTimeout(cartCloseTimer);
   cartPanel.classList.add("is-cart-closing");
   cartPanel.classList.remove("is-open", "is-cart-open");
-  cartPanel.setAttribute("aria-hidden", "true");
+  setDialogOpen(cartPanel, false);
   cartToggle.setAttribute("aria-expanded", "false");
-  if (!infoPanel.classList.contains("is-open")) {
-    cartBackdrop.hidden = true;
-    document.body.classList.remove("is-panel-open");
-  }
-  closeTimer = setTimeout(() => {
+  hideBackdropIfIdle();
+  cartCloseTimer = setTimeout(() => {
     cartPanel.classList.remove("is-cart-closing");
-    closeTimer = undefined;
+    cartCloseTimer = undefined;
     if (typeof onClosed === "function") onClosed();
     restoreDialogFocus(focusTarget);
   }, 420);
 }
 
 function closeInfo(onClosed) {
-  if (!infoPanel.classList.contains("is-open")) return;
+  if (!infoPanel.classList.contains("is-open")) {
+    if (typeof onClosed === "function") onClosed();
+    return;
+  }
   const focusTarget = deactivateDialog(infoPanel);
-  clearTimeout(closeTimer);
+  clearTimeout(infoCloseTimer);
   infoPanel.classList.add("is-info-closing");
   infoPanel.classList.remove("is-open", "is-info-open");
-  infoPanel.setAttribute("aria-hidden", "true");
-  if (!cartPanel.classList.contains("is-open")) {
-    cartBackdrop.hidden = true;
-    document.body.classList.remove("is-panel-open");
-  }
-  closeTimer = setTimeout(() => {
+  setDialogOpen(infoPanel, false);
+  hideBackdropIfIdle();
+  infoCloseTimer = setTimeout(() => {
     infoPanel.classList.remove("is-info-closing");
-    closeTimer = undefined;
+    infoCloseTimer = undefined;
     if (typeof onClosed === "function") onClosed();
     restoreDialogFocus(focusTarget);
   }, 420);
+}
+
+async function claimProduct(product) {
+  const added = await addProduct(product);
+  if (!added) return false;
+  openCart();
+  return true;
 }
 
 function closeOpenPanel() {
@@ -816,8 +840,9 @@ async function changeQuantity(productId, change) {
 }
 
 async function addProduct(product) {
-  if (!product || addLock || nextSerial(product) === undefined) return false;
+  if (!product || addLock || checkoutLock || nextSerial(product) === undefined) return false;
   addLock = true;
+  checkoutButton.disabled = true;
   cartError.textContent = "";
   const nextCart = { ...cart, [product.id]: (cart[product.id] || 0) + 1 };
   try {
@@ -832,12 +857,14 @@ async function addProduct(product) {
     return false;
   } finally {
     addLock = false;
+    if (!checkoutLock) renderCart();
   }
 }
 
 async function addSeries() {
-  if (addLock) return;
+  if (addLock || checkoutLock) return;
   addLock = true;
+  checkoutButton.disabled = true;
   cartError.textContent = "";
   const nextCart = { ...cart };
   for (const product of products) {
@@ -857,11 +884,14 @@ async function addSeries() {
     openCart();
   } finally {
     addLock = false;
+    if (!checkoutLock) renderCart();
   }
 }
 
 async function startCheckout() {
+  if (addLock || checkoutLock) return;
   cartError.textContent = "";
+  checkoutLock = true;
   checkoutButton.disabled = true;
   checkoutButton.textContent = checkoutMode === "demo" ? "Placing order…" : "Opening checkout…";
   try {
@@ -883,8 +913,9 @@ async function startCheckout() {
       reservations = await syncCartReservations(cart);
       renderCart();
     } catch {}
-    checkoutButton.disabled = false;
+    checkoutLock = false;
     checkoutButton.textContent = "Check out";
+    renderCart();
   }
 }
 
@@ -937,7 +968,9 @@ window.addEventListener("resize", () => {
 cartToggle.addEventListener("click", openCart);
 document.querySelector(".cart-close").addEventListener("click", () => closeCart());
 document.querySelector(".info-close").addEventListener("click", () => closeInfo());
-infoClaim.addEventListener("click", () => closeInfo(() => addProduct(activeProduct)));
+infoClaim.addEventListener("click", () => claimProduct(activeProduct));
+setDialogOpen(cartPanel, false);
+setDialogOpen(infoPanel, false);
 cartBackdrop.addEventListener("click", () => closeOpenPanel());
 checkoutButton.addEventListener("click", startCheckout);
 collectionAdd.addEventListener("click", addSeries);

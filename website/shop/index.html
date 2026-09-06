@@ -8,7 +8,7 @@
     <script>
       document.documentElement.classList.add("is-loading");
     </script>
-    <link rel="stylesheet" href="shop.css?v=200">
+    <link rel="stylesheet" href="shop.css?v=201">
   </head>
   <body>
     <div class="site-loader" aria-hidden="true">
@@ -66,7 +66,7 @@
 
     <div class="cart-backdrop" hidden></div>
 
-    <aside id="product-info" class="product-info" role="dialog" aria-modal="true" aria-label="Product information" aria-hidden="true" tabindex="-1">
+    <aside id="product-info" class="product-info" role="dialog" aria-modal="true" aria-label="Product information" aria-hidden="true" tabindex="-1" inert>
       <button class="info-close" type="button">Close</button>
       <div class="product-info-media"></div>
       <div class="product-info-copy">
@@ -87,7 +87,7 @@
       </div>
     </aside>
 
-    <aside id="cart" class="cart" role="dialog" aria-modal="true" aria-label="Shopping cart" aria-hidden="true" tabindex="-1">
+    <aside id="cart" class="cart" role="dialog" aria-modal="true" aria-label="Shopping cart" aria-hidden="true" tabindex="-1" inert>
       <button class="cart-close" type="button">Close</button>
       <h2>Selection</h2>
       <div class="cart-items"></div>
@@ -108,6 +108,6 @@
       </nav>
     </footer>
     <script src="shop-storage.js?v=1"></script>
-    <script src="shop.js?v=201"></script>
+    <script src="shop.js?v=202"></script>
   </body>
 </html>

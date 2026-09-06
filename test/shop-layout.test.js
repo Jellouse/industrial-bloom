@@ -53,7 +53,7 @@ test("product cards expose price plus Add and Choose", () => {
   assert.match(js, /element\("button", "card-choose", "Choose"\)/);
   assert.match(js, /add\.addEventListener\("click", \(\) => addProduct\(product\)\)/);
   assert.match(js, /choose\.addEventListener\("click", \(\) => openInfo\(product\)\)/);
-  assert.match(js, /infoClaim\.addEventListener\("click", \(\) => closeInfo\(\(\) => addProduct\(activeProduct\)\)\)/);
+  assert.match(js, /infoClaim\.addEventListener\("click", \(\) => claimProduct\(activeProduct\)\)/);
 });
 
 test("the series pack can add available editions or return to the grid", () => {
@@ -171,7 +171,8 @@ test("cart rows only expose removal, not quantity controls", () => {
 test("removing the final cart item closes the cart", () => {
   assert.match(js, /if \(!Object\.keys\(cart\)\.length && cartPanel\.classList\.contains\("is-open"\)\) \{[\s\S]*closeCart\(renderCart\);[\s\S]*return;/);
   assert.match(js, /function closeCart\(onClosed\)[\s\S]*classList\.add\("is-cart-closing"\);/);
-  assert.match(js, /closeTimer = setTimeout\(\(\) => \{[\s\S]*\}, 420\)/);
+  assert.match(js, /cartCloseTimer = setTimeout\(\(\) => \{[\s\S]*\}, 420\)/);
+  assert.match(js, /infoCloseTimer = setTimeout\(\(\) => \{[\s\S]*\}, 420\)/);
   assert.match(js, /cartBackdrop\.hidden = true;/);
 });
 
@@ -193,6 +194,39 @@ test("cart rows show a minimal live reservation timer beside remove", () => {
   assert.match(css, /\.cart-item\.is-expired \.cart-item-actions > :not\(\.reservation-timer\):not\(\.remove\)\s*{[\s\S]*opacity:\s*0\.24;[\s\S]*grayscale\(1\)/);
   assert.match(css, /\.cart-item\.is-expired \.reservation-timer\s*{\s*color:\s*#000;\s*cursor:\s*pointer;/);
   assert.match(css, /\.cart-item\.is-expired \.remove\s*{\s*color:\s*#000;\s*opacity:\s*1;\s*filter:\s*none;/);
+});
+
+test("Choose Add reserves immediately, then opens the cart for checkout", () => {
+  assert.match(js, /async function claimProduct\(product\)/);
+  assert.match(js, /const added = await addProduct\(product\);/);
+  assert.match(js, /if \(!added\) return false;\s*openCart\(\);/);
+  assert.doesNotMatch(js, /closeInfo\(\(\) => addProduct/);
+});
+
+test("closed and closing drawers cannot steal clicks from Add or Choose", () => {
+  assert.match(css, /\.cart,[\s\S]*\.product-info\s*{[\s\S]*pointer-events:\s*none;/);
+  assert.match(css, /\.cart\.is-open,[\s\S]*\.product-info\.is-open\s*{[\s\S]*pointer-events:\s*auto;/);
+  assert.match(css, /\.cart\.is-cart-closing,[\s\S]*\.product-info\.is-info-closing\s*{[\s\S]*pointer-events:\s*none;/);
+  assert.match(css, /\.cart-backdrop\[hidden\]\s*{[\s\S]*pointer-events:\s*none;/);
+  assert.match(js, /function hideBackdropIfIdle\(\)/);
+  assert.match(js, /if \(cartPanel\.classList\.contains\("is-open"\) \|\| infoPanel\.classList\.contains\("is-open"\)\) return;/);
+});
+
+test("cart and product-info drawers trap focus, restore it, and stay mutually exclusive", () => {
+  assert.match(html, /id="product-info"[\s\S]*role="dialog"[\s\S]*inert/);
+  assert.match(html, /id="cart"[\s\S]*role="dialog"[\s\S]*inert/);
+  assert.match(js, /function setDialogOpen\(panel, open\)[\s\S]*panel\.inert = !open;/);
+  assert.match(js, /if \(infoPanel\.classList\.contains\("is-open"\)\) closeInfo\(\);/);
+  assert.match(js, /if \(cartPanel\.classList\.contains\("is-open"\)\) closeCart\(\);/);
+  assert.match(js, /if \(activeDialog\) return;/);
+  assert.match(js, /if \(event\.key === "Escape"\) \{\s*closeOpenPanel\(\);/);
+  assert.match(js, /activeDialog\.querySelectorAll\(\s*'button:not\(:disabled\), \[href\], input:not\(:disabled\), \[tabindex\]:not\(\[tabindex="-1"\]\)'/);
+});
+
+test("checkout posts the reserved cart without changing the payload shape", () => {
+  assert.match(js, /async function startCheckout\(\) \{\s*if \(addLock \|\| checkoutLock\) return;/);
+  assert.match(js, /body: JSON\.stringify\(\{\s*visitorId,\s*customerEmail: "",\s*items: cartItemsPayload\(\),\s*\}\)/);
+  assert.match(js, /fetch\("\/api\/shop\/checkout"/);
 });
 
 test("drawer buttons darken subtly on hover", () => {

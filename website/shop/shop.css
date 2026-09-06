@@ -470,6 +470,14 @@ h1 {
   z-index: 110;
   inset: 0;
   background: rgba(17, 17, 17, 0.28);
+  pointer-events: none;
+}
+
+.cart-backdrop:not([hidden]) { pointer-events: auto; }
+
+.cart-backdrop[hidden] {
+  display: none !important;
+  pointer-events: none;
 }
 
 .cart,
@@ -488,12 +496,21 @@ h1 {
   transform: translateX(100%);
   transition: transform 420ms cubic-bezier(0.53, 0, 0.12, 0.99);
   visibility: hidden;
+  pointer-events: none;
 }
 
 .cart.is-open,
 .product-info.is-open {
   transform: translateX(0);
   visibility: visible;
+  pointer-events: auto;
+}
+
+.cart.is-cart-closing,
+.product-info.is-info-closing {
+  visibility: visible;
+  pointer-events: none;
+  transform: translateX(100%);
 }
 
 body.is-panel-open { overflow: hidden; }
