@@ -26,6 +26,12 @@ module.exports = async function handler(request, response) {
       process.env.STRIPE_WEBHOOK_SECRET,
     );
 
+    // Same Stripe account also serves humansize.de/shop. Ignore sessions tagged for another site.
+    const site = event.data?.object?.metadata?.site;
+    if (site && site !== "worksurface") {
+      return response.status(200).json({ received: true, ignored: true });
+    }
+
     if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
       await completeCheckout(event.data.object);
     } else if (event.type === "checkout.session.expired") {
