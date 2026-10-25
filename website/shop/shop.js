@@ -556,7 +556,7 @@ function renderDock() {
   dockEdition.textContent = serialNumber === undefined
     ? "Sold out"
     : `N° ${serialNumber} of ${activeProduct.editionSize}`;
-  dockAdd.disabled = serialNumber === undefined;
+  dockAdd.disabled = serialNumber === undefined || checkoutMode === "paused";
   shopDock.classList.toggle("has-cart", count > 0);
   shopDock.classList.toggle("has-current-selection", selected > 0);
   shopDock.hidden = false;
@@ -756,6 +756,7 @@ function renderCart() {
   checkoutButton.dataset.total = money(total);
   checkoutButton.disabled = count === 0
     || checkoutMode === "unavailable"
+    || checkoutMode === "paused"
     || Object.keys(cart).some((productId) => reservationExpired(productId));
   saveCart();
   renderDock();
@@ -1138,6 +1139,10 @@ fetch(`/api/shop/products?visitorId=${encodeURIComponent(visitorId)}`)
     if (checkoutMode === "demo") {
       modeNote.hidden = false;
       modeNote.textContent = "Staging · demo checkout";
+    } else if (checkoutMode === "paused") {
+      modeNote.hidden = false;
+      modeNote.textContent = "Moving to humansize.de soon";
+      checkoutButton.textContent = "Moving to humansize.de soon";
     } else if (checkoutMode === "unavailable") {
       modeNote.hidden = false;
       modeNote.textContent = "Checkout setup in progress";

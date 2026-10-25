@@ -150,6 +150,10 @@ module.exports = async function handler(request, response) {
   let stripe;
   let stripeSession;
   try {
+    if (checkoutMode() === "paused") {
+      return response.status(503).json({ error: "Moving to humansize.de soon." });
+    }
+
     if (!(await setupDatabase())) {
       return response.status(503).json({ error: "The shop database is not configured." });
     }
